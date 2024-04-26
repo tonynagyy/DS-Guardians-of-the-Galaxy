@@ -155,4 +155,6 @@ int main() {
 	// Close the input file
 	InputFile.close();
 
+	return 0;
+
 }
