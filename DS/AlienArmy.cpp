@@ -72,6 +72,23 @@ void AlienArmy::attack(Army* enemy)
 		aMonstersList.AddElement(AlienUnit);
 
 	}
+
+	if (!aDronesList.isEmpty()) {
+		Unit* firDrone = nullptr;
+		Unit* secDrone = nullptr; 
+		
+		aDronesList.dequeue(firDrone);
+		aDronesList.RearDequeue(secDrone);
+
+		if (firDrone == nullptr || secDrone == nullptr) {
+
+		}
+		else {
+
+		}
+
+
+	}
 }
 
 void AlienArmy::addUnit(Unit* AlienUnit)
@@ -130,6 +147,7 @@ int AlienArmy::getSoldiersCount()
 {
 	return aSoldiersList.getCount();
 }
+
 void AlienArmy::printArmy()
 {
 	std::cout << "====================== Alien Army Alive Units ====================== " << endl;

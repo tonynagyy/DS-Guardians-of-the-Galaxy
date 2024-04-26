@@ -20,7 +20,7 @@ void EarthArmy::attack(Army* enemy)
 			SoldierTemp.enqueue(AlienUnit);
 		}
 		/* then we will start to attack them */
-		for (int i = 0;i < EarthUnit->getAttackCapacity();i++) {
+		for (int i = 0; i < SoldierTemp.getCount(); i++) {
 			SoldierTemp.dequeue(AlienUnit);
 			EarthUnit->attack(AlienUnit);
 			if (AlienUnit->getHealth() <= 0)  // after attack i have to check is the soldier dead or not 
@@ -67,7 +67,7 @@ void EarthArmy::attack(Army* enemy)
 				}
 			}
 
-			for (int i = 0; i < EarthUnit->getAttackCapacity(); i++) {
+			for (int i = 0; i < enemyTemp.getCount(); i++) {
 
 				enemyTemp.dequeue(AlienUnit);
 
@@ -92,7 +92,7 @@ void EarthArmy::attack(Army* enemy)
 				enemyTemp.enqueue(AlienUnit);
 			}
 
-			for (int i = 0; i < EarthUnit->getAttackCapacity(); i++) {
+			for (int i = 0; i < enemyTemp.getCount(); i++) {
 				enemyTemp.dequeue(AlienUnit);
 				EarthUnit->attack(AlienUnit);
 				if (AlienUnit->getHealth() <= 0)  // after attack i have to check is the Monster dead or not 
@@ -102,6 +102,63 @@ void EarthArmy::attack(Army* enemy)
 				else {
 					enemy->addUnit(AlienUnit);
 				}
+			}
+		}
+	}
+
+
+	/*Here Earth gunnery Will attack Alien monsters and drones Depend on its attack capacity*/
+	if (!eGunneryList.isEmpty()) {
+		int pri = 0;
+		eGunneryList.peek(EarthUnit, pri);
+		LinkedQueue<Unit*> enemytemp;
+		
+		int attackCapacity = EarthUnit->getAttackCapacity();
+		int monstersAttacked = EarthUnit->getAttackCapacity() / 2;
+		int dronesAttacked = EarthUnit->getAttackCapacity() - monstersAttacked;
+
+		bool isMonsterEmpty = false;
+		for (int i = 0; i < EarthUnit->getAttackCapacity(); i++) {
+			
+			if (i < monstersAttacked) {
+				AlienUnit = enemy->removeUnit("AM");
+				if (AlienUnit == nullptr) {
+					monstersAttacked = 0;
+					dronesAttacked = EarthUnit->getAttackCapacity() - i;
+					isMonsterEmpty = true;
+				}
+				else {
+					enemytemp.enqueue(AlienUnit);
+				}
+
+			}
+			else {
+				AlienUnit = enemy->removeUnit("AD");
+
+				if (AlienUnit == nullptr) {
+					if (!isMonsterEmpty) {
+						monstersAttacked = EarthUnit->getAttackCapacity() - i;
+						dronesAttacked = 0;
+					}
+					else {
+						break;
+					}
+				}
+				else {
+					enemytemp.enqueue(AlienUnit);
+				}
+			}
+		}
+
+		for (int i = 0; i < enemytemp.getCount(); i++) {
+			enemytemp.dequeue(AlienUnit);
+			EarthUnit->attack(AlienUnit);
+			if (AlienUnit->getHealth() <= 0)  // after attack i have to check is the Monster dead or not 
+			{
+				pGame->AddToKilled(AlienUnit);
+			}
+			else {
+				enemy->addUnit(AlienUnit);
 			}
 		}
 	}
