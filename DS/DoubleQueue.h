@@ -137,7 +137,7 @@ bool DoubleQueue<T>::peek(T& frntEntry) const
 {
 	if (isEmpty())
 		return false;
-
+	
 	frntEntry = frontPtr->getItem();
 	return true;
 

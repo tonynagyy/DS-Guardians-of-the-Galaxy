@@ -9,7 +9,6 @@ public:
 	bool RearDequeue( T& lstEntry);
 	bool FrontEnqueue(const T& lstEntry);
 
-
 };
 
 template<typename T>
@@ -65,3 +64,5 @@ inline bool DoubleEndedQueue<T>::FrontEnqueue(const T& lstEntry)
 	return true;
 	
 }
+
+

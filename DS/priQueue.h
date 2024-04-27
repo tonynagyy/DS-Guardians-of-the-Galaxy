@@ -51,7 +51,7 @@ public:
         return true;
     }
 
-    bool peek(T& topEntry, int& pri) {
+    bool peek(T& topEntry, double& pri) {
         if (isEmpty())
             return false;
 

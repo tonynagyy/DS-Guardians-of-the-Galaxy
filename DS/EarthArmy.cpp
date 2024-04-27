@@ -109,7 +109,7 @@ void EarthArmy::attack(Army* enemy)
 
 	/*Here Earth gunnery Will attack Alien monsters and drones Depend on its attack capacity*/
 	if (!eGunneryList.isEmpty()) {
-		int pri = 0;
+		double pri = 0.0;
 		eGunneryList.peek(EarthUnit, pri);
 		LinkedQueue<Unit*> enemytemp;
 		

@@ -74,20 +74,108 @@ void AlienArmy::attack(Army* enemy)
 	}
 
 	if (!aDronesList.isEmpty()) {
-		Unit* firDrone = nullptr;
-		Unit* secDrone = nullptr; 
-		
-		aDronesList.dequeue(firDrone);
-		aDronesList.RearDequeue(secDrone);
+		Unit* secAlienUnit;
+		aDronesList.dequeue(AlienUnit);
+		aDronesList.RearDequeue(secAlienUnit);
+		LinkedQueue<Unit*> enemyTemp;
 
-		if (firDrone == nullptr || secDrone == nullptr) {
+		if (AlienUnit != nullptr && secAlienUnit != nullptr) {
+			int firtankattacked = AlienUnit->getAttackCapacity()/2;
+			int firgunneryattacked = AlienUnit->getAttackCapacity() - firtankattacked;
+			int sectankattacked = secAlienUnit->getAttackCapacity()/2;
+			int secgunneryattacked = secAlienUnit->getAttackCapacity() - sectankattacked;
 
+			/////////first Drone////////////
+
+			for (int i = 0; i < AlienUnit->getAttackCapacity(); i++) {
+				bool isTankEmpty = false;
+				if (i < firtankattacked) {
+					EarthUnit = enemy->removeUnit("ET");
+					if (EarthUnit == nullptr) {
+						firtankattacked = 0;
+						firgunneryattacked = AlienUnit->getAttackCapacity() - i;
+						isTankEmpty = true;
+					}
+					else {
+						enemyTemp.enqueue(EarthUnit);
+					}
+
+				}
+				else {
+					EarthUnit = enemy->removeUnit("EG");
+
+					if (EarthUnit == nullptr) {
+						if (!isTankEmpty) {
+							firtankattacked = AlienUnit->getAttackCapacity() - i;
+							firgunneryattacked = 0;
+						}
+						else {
+							break;
+						}
+					}
+					else {
+						enemyTemp.enqueue(EarthUnit);
+					}
+				}
+			}
+			for (int i = 0; i < enemyTemp.getCount(); i++) {
+				enemyTemp.dequeue(EarthUnit);
+				AlienUnit->attack(EarthUnit);
+				if (EarthUnit->getHealth() <= 0)  // after attack i have to check is the Monster dead or not 
+				{
+					pGame->AddToKilled(EarthUnit);
+				}
+				else {
+					enemy->addUnit(EarthUnit);
+				}
+			}
+			
+			///////////////Now second Drone//////////////////////
+
+			for (int i = 0; i < secAlienUnit->getAttackCapacity(); i++) {
+				bool isTankEmpty = false;
+				if (i < sectankattacked) {
+					EarthUnit = enemy->removeUnit("ET");
+					if (EarthUnit == nullptr) {
+						sectankattacked = 0;
+						secgunneryattacked = secAlienUnit->getAttackCapacity() - i;
+						isTankEmpty = true;
+					}
+					else {
+						enemyTemp.enqueue(EarthUnit);
+					}
+
+				}
+				else {
+					EarthUnit = enemy->removeUnit("EG");
+
+					if (EarthUnit == nullptr) {
+						if (!isTankEmpty) {
+							sectankattacked = AlienUnit->getAttackCapacity() - i;
+							secgunneryattacked = 0;
+						}
+						else {
+							break;
+						}
+					}
+					else {
+						enemyTemp.enqueue(EarthUnit);
+					}
+				}
+			}
+			for (int i = 0; i < enemyTemp.getCount(); i++) {
+				enemyTemp.dequeue(EarthUnit);
+				secAlienUnit->attack(EarthUnit);
+				if (EarthUnit->getHealth() <= 0)  // after attack i have to check is the Monster dead or not 
+				{
+					pGame->AddToKilled(EarthUnit);
+				}
+				else {
+					enemy->addUnit(EarthUnit);
+				}
+			}
+			
 		}
-		else {
-
-		}
-
-
 	}
 }
 
