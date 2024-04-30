@@ -10,6 +10,7 @@ class EarthArmy : public Army
 	LinkedQueue<Unit*> eSoldiersList;
 	ArrayStack<Unit*> eTanksList;
 	priQueue<Unit*> eGunneryList;
+	ArrayStack<Unit*> healList;
 	Unit* EarthUnit;
 public:
 	EarthArmy(Game* pGame);

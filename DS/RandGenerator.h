@@ -5,6 +5,7 @@
 #include "EarthSoldier.h"
 #include "EarthTank.h"
 #include "EarthArmy.h"
+#include "healUnit.h"
 #include "AlienArmy.h"
 #include "AlienDrone.h"
 #include "AlienMonster.h"

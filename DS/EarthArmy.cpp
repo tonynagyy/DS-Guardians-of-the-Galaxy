@@ -175,6 +175,9 @@ void EarthArmy::addUnit(Unit* EarthUnit)
 	else if (dynamic_cast<EarthGunnery*>(EarthUnit)) {
 		eGunneryList.enqueue(EarthUnit,EarthUnit->getPriority());  // pls check the priority function
 	}
+	else if (dynamic_cast<healUnit*>(EarthUnit)) {
+		healList.push(EarthUnit);
+	}
 }
 
 Unit* EarthArmy::removeUnit(string type)
@@ -197,6 +200,11 @@ Unit* EarthArmy::removeUnit(string type)
 			EarthUnit= nullptr;
 		}
 
+	}
+	else if (type == "HU") {
+		if (!healList.pop(EarthUnit)) {
+			EarthUnit = nullptr;
+		}
 	}
 	return EarthUnit;
 
