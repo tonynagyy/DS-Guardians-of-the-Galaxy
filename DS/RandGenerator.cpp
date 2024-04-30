@@ -16,6 +16,8 @@ void RandGenerator::GenerateArmy(string armytype,int ts)
 {
 	TS = ts;
 
+	srand(time(0));
+
 	Army* eartharmy = pGame->getEarthArmy();
 	Army* alienarmy = pGame->getAlienArmy();
 

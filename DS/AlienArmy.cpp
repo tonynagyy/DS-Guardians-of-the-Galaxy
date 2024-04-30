@@ -11,19 +11,34 @@ void AlienArmy::attack(Army* enemy)
 {
 	Unit* EarthUnit;
 	Unit* AlienUnit;
+	/* Pointers for printing the fighting units*/
+	AS_Attack=nullptr;
+	AM_Attack=nullptr;
+	AD_Attack=nullptr;
+	AD2_Attack=nullptr;
+	AS_attacking_list=new LinkedQueue<Unit*>;
+	AM_attacking_list=new LinkedQueue<Unit*>;
+	AD_attacking_list=new LinkedQueue<Unit*>;
+	AD2_attacking_list=new LinkedQueue<Unit*>;
 	/*Here Alien Soldier Will attack Earth Soldiers Depend on its attack capacity*/
 	if (!aSoldiersList.isEmpty()) {
 		aSoldiersList.peek(AlienUnit);
 		LinkedQueue<Unit*> SoldierTemp;
+		AS_Attack=AlienUnit;
 		/*First we will get the soldiers that will be attacked*/
 		for (int i = 0;i < AlienUnit->getAttackCapacity();i++) {
 			EarthUnit = enemy->removeUnit("ES");
 			SoldierTemp.enqueue(EarthUnit);
 		}
 		/* then we will start to attack them */
-		for (int i = 0;i < AlienUnit->getAttackCapacity();i++) {
+		int loopCount = SoldierTemp.getCount();
+		for (int i = 0;i < loopCount ;i++) {
 			SoldierTemp.dequeue(EarthUnit);
+
+			if (!EarthUnit) break;
+
 			AlienUnit->attack(EarthUnit);
+			AS_attacking_list->enqueue(EarthUnit);
 			if (EarthUnit->getHealth() <= 0)  // after attack i have to check is the soldier dead or not 
 			{
 				pGame->AddToKilled(EarthUnit);
@@ -39,7 +54,7 @@ void AlienArmy::attack(Army* enemy)
 	if (!aMonstersList.isEmpty()) {
 
 		aMonstersList.Remove(AlienUnit);
-
+		AM_Attack=AlienUnit;
 		LinkedQueue<Unit*> enemyTemp;
 
 		int tankCapacity = AlienUnit->getAttackCapacity() / 2;
@@ -49,17 +64,27 @@ void AlienArmy::attack(Army* enemy)
 
 			if (enemyTemp.getCount() < tankCapacity) {
 				EarthUnit = enemy->removeUnit("ET");
-				enemyTemp.enqueue(EarthUnit);
+				if (EarthUnit == nullptr) {
+					tankCapacity = 0;
+					soldierCapacity = AlienUnit->getAttackCapacity() - i;
+				}
+				else {
+					enemyTemp.enqueue(EarthUnit);
+				}
 			}
 			else {
 				EarthUnit = enemy->removeUnit("ES");
 				enemyTemp.enqueue(EarthUnit);
 			}
 		}
-
-		for (int i = 0; i < AlienUnit->getAttackCapacity(); i++) {
+        int loopCount = enemyTemp.getCount();
+		for (int i = 0; i < loopCount; i++) {
 			enemyTemp.dequeue(EarthUnit);
+
+			if (!EarthUnit) break;
+
 			AlienUnit->attack(EarthUnit);
+			AM_attacking_list->enqueue(EarthUnit);
 			if (EarthUnit->getHealth() <= 0)
 			{
 				pGame->AddToKilled(EarthUnit);
@@ -76,7 +101,9 @@ void AlienArmy::attack(Army* enemy)
 	if (!aDronesList.isEmpty()) {
 		Unit* secAlienUnit;
 		aDronesList.dequeue(AlienUnit);
+		AD_Attack=AlienUnit;
 		aDronesList.RearDequeue(secAlienUnit);
+		AD2_Attack=secAlienUnit;
 		LinkedQueue<Unit*> enemyTemp;
 
 		if (AlienUnit != nullptr && secAlienUnit != nullptr) {
@@ -118,9 +145,14 @@ void AlienArmy::attack(Army* enemy)
 					}
 				}
 			}
-			for (int i = 0; i < enemyTemp.getCount(); i++) {
+			int loopCount = enemyTemp.getCount();
+			for (int i = 0; i < loopCount; i++) {
 				enemyTemp.dequeue(EarthUnit);
+
+				if (!EarthUnit) break;
+
 				AlienUnit->attack(EarthUnit);
+				AD_attacking_list->enqueue(EarthUnit);
 				if (EarthUnit->getHealth() <= 0)  // after attack i have to check is the Monster dead or not 
 				{
 					pGame->AddToKilled(EarthUnit);
@@ -163,9 +195,14 @@ void AlienArmy::attack(Army* enemy)
 					}
 				}
 			}
-			for (int i = 0; i < enemyTemp.getCount(); i++) {
+			int loopCount1 = enemyTemp.getCount();
+			for (int i = 0; i < loopCount1; i++) {
 				enemyTemp.dequeue(EarthUnit);
+
+				if (!EarthUnit) break;
+
 				secAlienUnit->attack(EarthUnit);
+				AD2_attacking_list->enqueue(EarthUnit);
 				if (EarthUnit->getHealth() <= 0)  // after attack i have to check is the Monster dead or not 
 				{
 					pGame->AddToKilled(EarthUnit);
@@ -176,6 +213,11 @@ void AlienArmy::attack(Army* enemy)
 			}
 			
 		}
+
+		if (AlienUnit)
+			aDronesList.enqueue(AlienUnit);
+		if (secAlienUnit)
+			aDronesList.enqueue(secAlienUnit);
 	}
 }
 
@@ -249,5 +291,38 @@ void AlienArmy::printArmy()
 	std::cout << endl;
 
 
+}
+
+void AlienArmy::printFightingUnits()
+{
+	if (AS_Attack && !AS_attacking_list->isEmpty()) {
+		std::cout << "AS " << AS_Attack->getID() << " Shots ";
+		AS_attacking_list->print();
+	}
+	
+	if (AM_Attack && !AM_attacking_list->isEmpty()) {
+		std::cout << "AM " << AM_Attack->getID() << " Shots ";
+		AM_attacking_list->print();
+	}
+	
+	if (AD_Attack && !AD_attacking_list->isEmpty()) {
+		std::cout << "AD " << AD_Attack->getID() << " Shots ";
+		AD_attacking_list->print();
+	}
+	if (AD2_Attack && !AD2_attacking_list->isEmpty()) {
+		std::cout << "AD " << AD2_Attack->getID() << " Shots ";
+		AD2_attacking_list->print();
+	}
+
+	delete AS_attacking_list;
+	delete AM_attacking_list;
+	delete AD_attacking_list;
+	delete AD2_attacking_list;
+	AS_attacking_list = nullptr;
+	AM_attacking_list = nullptr;
+	AD_attacking_list = nullptr;
+	AD2_attacking_list = nullptr;
+	
+	
 }
 		

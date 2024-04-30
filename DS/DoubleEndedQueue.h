@@ -19,8 +19,11 @@ inline DoubleEndedQueue<T>::DoubleEndedQueue() : DoubleQueue<T>()
 template<typename T>
 inline bool DoubleEndedQueue<T>::RearDequeue(T& lstEntry)
 {
-	if (this->isEmpty())
+	if (this->isEmpty()) {
+		lstEntry = nullptr;
 		return false;
+	}
+		
 
 	NodeWithPrev<T>* lstnodeToDeletePtr = this->backPtr;
 		lstEntry = this->backPtr->getItem();
@@ -41,6 +44,7 @@ inline bool DoubleEndedQueue<T>::RearDequeue(T& lstEntry)
 
 	// Free memory reserved for the dequeued node
 	delete lstnodeToDeletePtr;
+	lstnodeToDeletePtr = nullptr;
 	this->count--;
 	return true;
 }

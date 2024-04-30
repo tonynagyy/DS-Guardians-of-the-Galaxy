@@ -35,6 +35,7 @@ public:
 	//other functions
 		
 	virtual void printArmy() = 0;
+	virtual void printFightingUnits() = 0;
 };
 
 #endif

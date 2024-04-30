@@ -27,7 +27,10 @@ public:
 	Army* getEarthArmy();
 	Army* getAlienArmy();
 	void print();
+	void StartWar();
 	~Game();
 };
 #endif
+
+
 

@@ -72,13 +72,25 @@ void Game::print()
 
 	eartharmy->printArmy();
 	alienarmy->printArmy();
-
+	std::cout << "====================== Units Fighting at current step ===================== " << endl;
+	eartharmy->printFightingUnits();
+	alienarmy->printFightingUnits();
 	std::cout << "====================== Killed / Destructed Units ===================== " << endl;
-	Unit* pUnit = nullptr;
 	std::cout << KilledList.getCount() <<" ";
 	KilledList.print();
 
+
 	cout << endl;
+
+}
+
+void Game::StartWar()
+{
+	eartharmy->attack(alienarmy);
+	alienarmy->attack(eartharmy);
+
+	dynamic_cast<EarthArmy*>(eartharmy)->modifyUML(timestep);
+	dynamic_cast<EarthArmy*>(eartharmy)->Heal(timestep);
 
 }
 

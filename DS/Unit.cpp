@@ -9,6 +9,7 @@ Unit::Unit(int id, string type, int jointime, double health, double power, int a
 	joinTime = jointime;
 	Type = type;
 	Health = health;
+	originalHealth = health;
 	Power = power;
 	attackCapacity = attackcapacity;
 	fAtime = 0;
@@ -73,6 +74,21 @@ int Unit::getAttackCapacity() const
 double Unit::getPriority() const
 {
 	return 0.4 * Health + 0.6 * Power;   // means i give 40% of importance to Health and 60% to power
+}
+
+void Unit::setUMLJoinTime(int time)
+{
+	UMLJoinTime = time;
+}
+
+int Unit::getUMLJoinTime() const
+{
+	return UMLJoinTime;
+}
+
+double Unit::getOriginalHealth() const
+{
+	return originalHealth;
 }
 
 void Unit::print()

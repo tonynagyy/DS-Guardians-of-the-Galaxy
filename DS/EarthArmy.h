@@ -11,7 +11,11 @@ class EarthArmy : public Army
 	ArrayStack<Unit*> eTanksList;
 	priQueue<Unit*> eGunneryList;
 	ArrayStack<Unit*> healList;
+	LinkedQueue<Unit*> tankUML;
+	priQueue<Unit*> soldiersUML;
 	Unit* EarthUnit;
+	Unit* ES_Attack, * ET_Attack, * EG_Attack;
+	LinkedQueue<Unit*>* ES_attacking_list, * ET_attacking_list, * EG_attacking_list;
 public:
 	EarthArmy(Game* pGame);
 	void attack(Army* enemy);
@@ -19,6 +23,9 @@ public:
 	Unit* removeUnit(string type) ;
 	int getSoldiersCount();
 	void printArmy();
+	void modifyUML(int timeStep);
+	void Heal(int timeStep);
+	void printFightingUnits();
 
 };
 #endif
