@@ -17,6 +17,7 @@ class Game
 	RandGenerator* pRandGen;
 	int timestep;
 	fstream* Input;
+	fstream Output;
 
 public:
 	Game();

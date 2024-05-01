@@ -5,7 +5,7 @@ EarthArmy::EarthArmy(Game* pGame): Army(pGame) {
 	EarthUnit = nullptr;
 }
 
-void EarthArmy::attack(Army* enemy)
+void EarthArmy::attack(Army* enemy , int timestep)
 {
 	Unit* EarthUnit;
 	Unit* AlienUnit;
@@ -41,6 +41,8 @@ void EarthArmy::attack(Army* enemy)
 			SoldierTemp.dequeue(AlienUnit);
 
 			if (!AlienUnit) break;
+
+			AlienUnit->setfatime(timestep);
 
 			EarthUnit->attack(AlienUnit);
 			if (AlienUnit->getHealth() <= 0)  // after attack i have to check is the soldier dead or not 
@@ -108,6 +110,7 @@ void EarthArmy::attack(Army* enemy)
 
 				if (!AlienUnit) break;
 
+				AlienUnit->setfatime(timestep);
 				EarthUnit->attack(AlienUnit);
 
 				if (AlienUnit->getHealth() <= 0)
@@ -141,6 +144,8 @@ void EarthArmy::attack(Army* enemy)
 				enemyTemp.dequeue(AlienUnit);
 
 				if (!AlienUnit) break;
+
+				AlienUnit->setfatime(timestep);
 
 				EarthUnit->attack(AlienUnit);
 
@@ -208,6 +213,8 @@ void EarthArmy::attack(Army* enemy)
 			enemytemp.dequeue(AlienUnit);
 
 			if (!AlienUnit) break;
+
+			AlienUnit->setfatime(timestep);
 
 			EarthUnit->attack(AlienUnit);
 			if (AlienUnit->getHealth() <= 0)  // after attack i have to check is the Monster dead or not 

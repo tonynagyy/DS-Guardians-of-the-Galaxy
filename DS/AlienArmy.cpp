@@ -7,7 +7,7 @@ AlienArmy::AlienArmy(Game* pGame): Army(pGame)
 	flag = 1; // so first remove for drones will remove the last one 
 }
 
-void AlienArmy::attack(Army* enemy)
+void AlienArmy::attack(Army* enemy,int timestep)
 {
 	Unit* EarthUnit;
 	Unit* AlienUnit;
@@ -28,7 +28,9 @@ void AlienArmy::attack(Army* enemy)
 		/*First we will get the soldiers that will be attacked*/
 		for (int i = 0;i < AlienUnit->getAttackCapacity();i++) {
 			EarthUnit = enemy->removeUnit("ES");
+			if(EarthUnit == nullptr) break;
 			SoldierTemp.enqueue(EarthUnit);
+
 		}
 		/* then we will start to attack them */
 		int loopCount = SoldierTemp.getCount();
@@ -37,6 +39,7 @@ void AlienArmy::attack(Army* enemy)
 
 			if (!EarthUnit) break;
 
+			EarthUnit->setfatime(timestep);
 			AlienUnit->attack(EarthUnit);
 			AS_attacking_list->enqueue(EarthUnit);
 			if (EarthUnit->getHealth() <= 0)  // after attack i have to check is the soldier dead or not 
@@ -64,6 +67,7 @@ void AlienArmy::attack(Army* enemy)
 
 			if (enemyTemp.getCount() < tankCapacity) {
 				EarthUnit = enemy->removeUnit("ET");
+
 				if (EarthUnit == nullptr) {
 					tankCapacity = 0;
 					soldierCapacity = AlienUnit->getAttackCapacity() - i;
@@ -74,6 +78,7 @@ void AlienArmy::attack(Army* enemy)
 			}
 			else {
 				EarthUnit = enemy->removeUnit("ES");
+				if(EarthUnit == nullptr) break;
 				enemyTemp.enqueue(EarthUnit);
 			}
 		}
@@ -82,6 +87,8 @@ void AlienArmy::attack(Army* enemy)
 			enemyTemp.dequeue(EarthUnit);
 
 			if (!EarthUnit) break;
+
+			EarthUnit->setfatime(timestep);
 
 			AlienUnit->attack(EarthUnit);
 			AM_attacking_list->enqueue(EarthUnit);
@@ -150,6 +157,7 @@ void AlienArmy::attack(Army* enemy)
 				enemyTemp.dequeue(EarthUnit);
 
 				if (!EarthUnit) break;
+				EarthUnit->setfatime(timestep);
 
 				AlienUnit->attack(EarthUnit);
 				AD_attacking_list->enqueue(EarthUnit);
@@ -201,6 +209,7 @@ void AlienArmy::attack(Army* enemy)
 
 				if (!EarthUnit) break;
 
+				EarthUnit->setfatime(timestep);
 				secAlienUnit->attack(EarthUnit);
 				AD2_attacking_list->enqueue(EarthUnit);
 				if (EarthUnit->getHealth() <= 0)  // after attack i have to check is the Monster dead or not 

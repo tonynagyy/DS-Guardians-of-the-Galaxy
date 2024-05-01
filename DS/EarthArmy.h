@@ -18,7 +18,7 @@ class EarthArmy : public Army
 	LinkedQueue<Unit*>* ES_attacking_list, * ET_attacking_list, * EG_attacking_list;
 public:
 	EarthArmy(Game* pGame);
-	void attack(Army* enemy);
+	void attack(Army* enemy, int timestep);
 	void addUnit(Unit*) ;
 	Unit* removeUnit(string type) ;
 	int getSoldiersCount();

@@ -32,6 +32,9 @@ public:
 	void setID(int);
 	int getID() const;
 
+	void setfatime(int);
+	int getfatime() const;
+
 	string getType() const;
 
 	void setJoinTime(int);

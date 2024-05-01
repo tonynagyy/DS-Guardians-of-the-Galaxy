@@ -26,6 +26,16 @@ int Unit::getID() const
 	return ID;
 }
 
+void Unit::setfatime(int x)
+{
+	fAtime = x;
+}
+
+int Unit::getfatime() const
+{
+	return fAtime;
+}
+
 string Unit::getType() const
 {
 	return Type;
