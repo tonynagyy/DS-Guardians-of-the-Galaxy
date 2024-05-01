@@ -118,121 +118,114 @@ void AlienArmy::attack(Army* enemy,int timestep)
 	if (!aDronesList.isEmpty()) {
 		Unit* secAlienUnit;
 		aDronesList.dequeue(AlienUnit);
-		AD_Attack=AlienUnit;
+		AD_Attack = AlienUnit;
 		aDronesList.RearDequeue(secAlienUnit);
-		AD2_Attack=secAlienUnit;
+		AD2_Attack = secAlienUnit;
 		LinkedQueue<Unit*> enemyTemp;
+		LinkedQueue<Unit*> enemyTemp2;
 
 		if (AlienUnit != nullptr && secAlienUnit != nullptr) {
-			int firtankattacked = AlienUnit->getAttackCapacity()/2;
+			int firtankattacked = AlienUnit->getAttackCapacity() / 2;
 			int firgunneryattacked = AlienUnit->getAttackCapacity() - firtankattacked;
-			int sectankattacked = secAlienUnit->getAttackCapacity()/2;
+			int sectankattacked = secAlienUnit->getAttackCapacity() / 2;
 			int secgunneryattacked = secAlienUnit->getAttackCapacity() - sectankattacked;
 
-			/////////first Drone////////////
-
-			for (int i = 0; i < AlienUnit->getAttackCapacity(); i++) {
-				bool isTankEmpty = false;
-				if (i < firtankattacked) {
-					EarthUnit = enemy->removeUnit("ET");
-					if (EarthUnit == nullptr) {
-						firtankattacked = 0;
-						firgunneryattacked = AlienUnit->getAttackCapacity() - i;
-						isTankEmpty = true;
-					}
-					else {
-						enemyTemp.enqueue(EarthUnit);
-					}
-
-				}
-				else {
-					EarthUnit = enemy->removeUnit("EG");
-
-					if (EarthUnit == nullptr) {
-						if (!isTankEmpty) {
-							firtankattacked = AlienUnit->getAttackCapacity() - i;
-							firgunneryattacked = 0;
+			for (int i = 0; i < AlienUnit->getAttackCapacity() + secAlienUnit->getAttackCapacity(); i++) {
+				if (i % 2 == 0) {
+					bool isTankEmpty = false;
+					if (i < firtankattacked) {
+						EarthUnit = enemy->removeUnit("ET");
+						if (EarthUnit == nullptr) {
+							firtankattacked = 0;
+							firgunneryattacked = AlienUnit->getAttackCapacity() - i;
+							isTankEmpty = true;
 						}
 						else {
-							break;
+							enemyTemp.enqueue(EarthUnit);
 						}
 					}
 					else {
-						enemyTemp.enqueue(EarthUnit);
-					}
-				}
-			}
-			int loopCount = enemyTemp.getCount();
-			for (int i = 0; i < loopCount; i++) {
-				enemyTemp.dequeue(EarthUnit);
-
-				if (!EarthUnit) break;
-				EarthUnit->setfatime(timestep);
-
-				AlienUnit->attack(EarthUnit);
-				AD_attacking_list->enqueue(EarthUnit);
-				if (EarthUnit->getHealth() <= 0)  // after attack i have to check is the Monster dead or not 
-				{
-					pGame->AddToKilled(EarthUnit);
-				}
-				else {
-					enemy->addUnit(EarthUnit);
-				}
-			}
-			
-			///////////////Now second Drone//////////////////////
-
-			for (int i = 0; i < secAlienUnit->getAttackCapacity(); i++) {
-				bool isTankEmpty = false;
-				if (i < sectankattacked) {
-					EarthUnit = enemy->removeUnit("ET");
-					if (EarthUnit == nullptr) {
-						sectankattacked = 0;
-						secgunneryattacked = secAlienUnit->getAttackCapacity() - i;
-						isTankEmpty = true;
-					}
-					else {
-						enemyTemp.enqueue(EarthUnit);
-					}
-
-				}
-				else {
-					EarthUnit = enemy->removeUnit("EG");
-
-					if (EarthUnit == nullptr) {
-						if (!isTankEmpty) {
-							sectankattacked = AlienUnit->getAttackCapacity() - i;
-							secgunneryattacked = 0;
+						EarthUnit = enemy->removeUnit("EG");
+						if (EarthUnit == nullptr) {
+							if (!isTankEmpty) {
+								firtankattacked = AlienUnit->getAttackCapacity() - i;
+								firgunneryattacked = 0;
+							}
+							else {
+								break;
+							}
 						}
 						else {
-							break;
+							enemyTemp.enqueue(EarthUnit);
+						}
+					}
+				}
+				else {
+					bool isTankEmpty = false;
+					if (i < sectankattacked) {
+						EarthUnit = enemy->removeUnit("ET");
+						if (EarthUnit == nullptr) {
+							sectankattacked = 0;
+							secgunneryattacked = secAlienUnit->getAttackCapacity() - i;
+							isTankEmpty = true;
+						}
+						else {
+							enemyTemp2.enqueue(EarthUnit);
 						}
 					}
 					else {
-						enemyTemp.enqueue(EarthUnit);
+						EarthUnit = enemy->removeUnit("EG");
+						if (EarthUnit == nullptr) {
+							if (!isTankEmpty) {
+								sectankattacked = secAlienUnit->getAttackCapacity() - i;
+								secgunneryattacked = 0;
+							}
+							else {
+								break;
+							}
+						}
+						else {
+							enemyTemp2.enqueue(EarthUnit);
+						}
 					}
 				}
 			}
-			int loopCount1 = enemyTemp.getCount();
-			for (int i = 0; i < loopCount1; i++) {
-				enemyTemp.dequeue(EarthUnit);
+			for (int i = 0; i < enemyTemp.getCount() + enemyTemp2.getCount(); i++) {
+				if (i % 2 == 0) {
+					enemyTemp.dequeue(EarthUnit);
 
-				if (!EarthUnit) break;
+					if (!EarthUnit) break;
 
-				EarthUnit->setfatime(timestep);
-				secAlienUnit->attack(EarthUnit);
-				AD2_attacking_list->enqueue(EarthUnit);
-				if (EarthUnit->getHealth() <= 0)  // after attack i have to check is the Monster dead or not 
-				{
-					pGame->AddToKilled(EarthUnit);
+					EarthUnit->setfatime(timestep);
+
+					AlienUnit->attack(EarthUnit);
+					AD_attacking_list->enqueue(EarthUnit);
+					if (EarthUnit->getHealth() <= 0)
+					{
+						pGame->AddToKilled(EarthUnit);
+					}
+					else {
+						enemy->addUnit(EarthUnit);
+					}
 				}
 				else {
-					enemy->addUnit(EarthUnit);
+					enemyTemp2.dequeue(EarthUnit);
+
+					if (!EarthUnit) break;
+
+					EarthUnit->setfatime(timestep);
+
+					secAlienUnit->attack(EarthUnit);
+					AD2_attacking_list->enqueue(EarthUnit);
+					if (EarthUnit->getHealth() <= 0) {
+						pGame->AddToKilled(EarthUnit);
+					}
+					else {
+						enemy->addUnit(EarthUnit);
+					}
 				}
 			}
-			
 		}
-
 		if (AlienUnit)
 			aDronesList.enqueue(AlienUnit);
 		if (secAlienUnit)
