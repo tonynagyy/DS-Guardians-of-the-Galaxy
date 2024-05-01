@@ -18,7 +18,6 @@ protected:
 	int attackCapacity; 
 	int UMLJoinTime; //time at which unit joins the UML
 	double originalHealth; // used for tanks and soldiers
-
 public:
 
 	// Constructors and Destructors
@@ -39,6 +38,9 @@ public:
 
 	void setJoinTime(int);
 	int getJoinTime() const;
+
+	void setDEStime(int);
+	int getDEStime() const;
 
 	void setHealth(double health);
 	double getHealth() const;

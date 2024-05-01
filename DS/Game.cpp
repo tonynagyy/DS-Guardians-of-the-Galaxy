@@ -12,7 +12,19 @@ if (!Output.is_open()) {
     std::cerr << "Failed to open output.txt for writing.\n";
 } else {
     Output << "Td" << "    " << "ID" << "    " << "Tj" << "    " << "Df" << "    " << "Dd" << "    " << "Db" << endl;
-}}
+}
+ES_dead = 0;
+ET_dead = 0;
+EG_dead = 0;
+AS_dead = 0;
+AM_dead = 0;
+AD_dead = 0;
+A_Dd = 0;
+A_Df = 0;
+E_Dd = 0;
+E_Df = 0;
+
+}
 
 Game::Game(fstream& input)
 {
@@ -28,10 +40,53 @@ Game::Game(fstream& input)
 	else {
 		Output << "Td" << "    " << "ID" << "    " << "Tj" << "    " << "Df" << "    " << "Dd" << "    " << "Db" << endl;
 	}
+	ES_dead = 0;
+	ET_dead = 0;
+	EG_dead = 0;
+	AS_dead = 0;
+	AM_dead = 0;
+	AD_dead = 0;
+	A_Dd = 0;
+	A_Df = 0;
+	E_Dd = 0;
+	E_Df = 0;
 }
 
 void Game::AddToKilled(Unit* Dead)
 {
+	if (dynamic_cast<EarthSoldier*>(Dead)) {
+		ES_dead++;
+		E_Dd = E_Dd + timestep - (Dead->getfatime());
+		E_Df = E_Df + (Dead->getfatime()) - (Dead->getJoinTime());
+	}
+	else if (dynamic_cast<EarthTank*>(Dead)) {
+		ET_dead++;
+		E_Dd = E_Dd + timestep - (Dead->getfatime());
+		E_Df = E_Df + (Dead->getfatime()) - (Dead->getJoinTime());
+	}
+	else if (dynamic_cast<EarthGunnery*>(Dead)) {
+		EG_dead++;
+		E_Dd = E_Dd + timestep - (Dead->getfatime());
+		E_Df = E_Df + (Dead->getfatime()) - (Dead->getJoinTime());
+	}
+	else if (dynamic_cast<AlienSoldier*>(Dead)) {
+		AS_dead++;
+		A_Dd = A_Dd + timestep - (Dead->getfatime());
+		A_Df = A_Df + (Dead->getfatime()) - (Dead->getJoinTime());
+	}
+	else if (dynamic_cast<AlienMonster*>(Dead)) {
+		AM_dead++;
+		A_Dd = A_Dd + timestep - (Dead->getfatime());
+		A_Df = A_Df + (Dead->getfatime()) - (Dead->getJoinTime());
+
+	}
+	else if (dynamic_cast<AlienDrone*>(Dead)) {
+		AD_dead++;
+		A_Dd = A_Dd + timestep - (Dead->getfatime());
+		A_Df = A_Df + (Dead->getfatime()) - (Dead->getJoinTime());
+	}
+	
+
 	Output << timestep<<"    " << Dead->getID() << "    " << Dead->getJoinTime() << "    " << (Dead->getfatime()) - (Dead->getJoinTime()) << "    " << timestep -(Dead->getfatime()) << "    " << (timestep)- (Dead->getJoinTime()) << endl;
 	KilledList.enqueue(Dead);
 }
@@ -109,6 +164,12 @@ void Game::StartWar()
 
 Game::~Game()
 {
+	Output<<endl;
+	Output<<endl;
+	Output << "====================== Final Earth Army ===================== " << endl;
+	eartharmy->Armyfile(Output,ES_dead,ET_dead,EG_dead,E_Df,E_Dd);
+	Output << "====================== Final Alien Army ===================== " << endl;
+	alienarmy->Armyfile(Output,AS_dead,AM_dead,AD_dead, E_Df, E_Dd);
 	Output.close();
 	if (!eartharmy)
 		delete eartharmy;

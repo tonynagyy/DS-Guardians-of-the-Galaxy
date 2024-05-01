@@ -1,10 +1,19 @@
 #include "AlienArmy.h"
 #include "Game.h"
+#include "iomanip"
 
 
 AlienArmy::AlienArmy(Game* pGame): Army(pGame)
 {
 	flag = 1; // so first remove for drones will remove the last one 
+	AS_Attack = nullptr;
+	AM_Attack = nullptr;
+	AD_Attack = nullptr;
+	AD2_Attack = nullptr;
+	AS_attacking_list = nullptr;
+	AM_attacking_list = nullptr;
+	AD_attacking_list = nullptr;
+	AD2_attacking_list = nullptr;
 }
 
 void AlienArmy::attack(Army* enemy,int timestep)
@@ -44,6 +53,7 @@ void AlienArmy::attack(Army* enemy,int timestep)
 			AS_attacking_list->enqueue(EarthUnit);
 			if (EarthUnit->getHealth() <= 0)  // after attack i have to check is the soldier dead or not 
 			{
+
 				pGame->AddToKilled(EarthUnit);
 			}
 			else {
@@ -333,5 +343,40 @@ void AlienArmy::printFightingUnits()
 	AD2_attacking_list = nullptr;
 	
 	
+}
+
+void AlienArmy::Armyfile(fstream& Output, int AS_dead, int AM_dead, int AD_dead, int Df, int Dd)
+{
+	Output<<std::fixed <<std::setprecision(2);
+	Output << aSoldiersList.getCount() << " AS " << "  " << aMonstersList.getCount() << " AM " << "  " << aDronesList.getCount() << " AD" << endl;
+	Output << endl;
+	Output << (double(AS_dead) / (aSoldiersList.getCount() + AS_dead)) * 100 << " %(Dead_AS) " << (double(AM_dead) / (aMonstersList.getCount() + AM_dead)) * 100 << " %(Dead_AM) " << (double(AD_dead) / (aDronesList.getCount() + AD_dead)) * 100 << " %(Dead_AD)" << endl;
+	Output << endl;
+	Output << (double(AS_dead + AM_dead + AD_dead) / (aSoldiersList.getCount() + aMonstersList.getCount() + aDronesList.getCount() + AS_dead + AM_dead + AD_dead)) * 100 << " %(Dead_AlienUnits)" << endl;
+	Output << endl;
+	int sum = AS_dead + AM_dead + AD_dead;
+	if (sum != 0) {
+		int Df_avg = (double(Df) / (AS_dead + AM_dead + AD_dead));
+		int Dd_avg = (double(Dd) / (AS_dead + AM_dead + AD_dead));
+		int Db_avg = (double(Df + Dd) / (AS_dead + AM_dead + AD_dead));
+
+		Output << "average of Df = " << Df_avg << endl;
+		Output << "average of Dd = " << Dd_avg << endl;
+		Output << "average of Db = " << Db_avg << endl;
+		Output << endl;
+		Output << "Df/Db % = " << (double(Df_avg) / Db_avg) * 100 << endl;
+		Output << "Dd/Db % = " << (double(Dd_avg) / Db_avg) * 100 << endl;
+	}
+	else {
+		Output << "average of Df = 0 %" << endl;
+		Output << "average of Dd = 0 %" << endl;
+		Output << "average of Db = 0 %" << endl;
+		Output << endl;
+		Output << "Df/Db % = 0" << endl;
+		Output << "Dd/Db % = 0" << endl;
+	}
+	
+
+
 }
 		

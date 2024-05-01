@@ -36,6 +36,8 @@ public:
 		
 	virtual void printArmy() = 0;
 	virtual void printFightingUnits() = 0;
+	virtual void Armyfile(fstream&,int,int,int,int,int) = 0;
+
 };
 
 #endif

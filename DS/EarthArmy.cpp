@@ -1,5 +1,6 @@
 #include "EarthArmy.h"
 #include "Game.h"
+#include <iomanip>
 
 EarthArmy::EarthArmy(Game* pGame): Army(pGame) {
 	EarthUnit = nullptr;
@@ -435,4 +436,24 @@ void EarthArmy::printFightingUnits()
 	EG_attacking_list = nullptr;
 
 
+}
+
+void EarthArmy::Armyfile(fstream& Output, int ES_dead, int ET_dead, int EG_dead, int Df, int Dd)
+{
+	Output << std::fixed << std::setprecision(2);
+	Output << eSoldiersList.getCount() << " ES " << "  " << eTanksList.getCount() << " ET " << "  " << eGunneryList.getCount() << " EG" << endl;
+	Output << endl;
+	Output << ( double(ES_dead) / (eSoldiersList.getCount() + ES_dead)) * 100 << " %(Dead_ES) " << (double(ET_dead) / (eTanksList.getCount() + ET_dead)) * 100 << " %(Dead_ET) " << (double(EG_dead) / (eGunneryList.getCount() + EG_dead)) * 100 << " %(Dead_EG)" << endl;
+	Output << endl;
+	Output << (double(ES_dead + ET_dead + EG_dead) / (eSoldiersList.getCount() + eTanksList.getCount() + eGunneryList.getCount() + ES_dead + ET_dead + EG_dead)) * 100 << " %(Dead_EarthUnits)" << endl;
+	Output << endl;
+	int Df_avg = (double(Df) / (ES_dead + ET_dead + EG_dead));
+	int Dd_avg = (double(Dd) / (ES_dead + ET_dead + EG_dead));
+	int Db_avg = (double(Df + Dd) / (ES_dead + ET_dead + EG_dead));
+	Output << "average of Df = " << Df_avg << endl;
+	Output << "average of Dd = " << Dd_avg << endl;
+	Output << "average of Db = " << Db_avg << endl;
+	Output << endl;	
+	Output << "Df/Db % = " << (double(Df_avg) / Db_avg) * 100 << endl;
+	Output << "Dd/Db % = " << (double(Dd_avg) / Db_avg) * 100 << endl;
 }

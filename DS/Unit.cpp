@@ -28,7 +28,8 @@ int Unit::getID() const
 
 void Unit::setfatime(int x)
 {
-	fAtime = x;
+	if(fAtime==0)
+	   fAtime = x;
 }
 
 int Unit::getfatime() const
@@ -49,6 +50,16 @@ void Unit::setJoinTime(int jointime)
 int Unit::getJoinTime() const
 {
 	return joinTime;
+}
+
+void Unit::setDEStime(int x)
+{
+	DEStime = x;
+}
+
+int Unit::getDEStime() const
+{
+	return DEStime;
 }
 
 void Unit::setHealth(double health)

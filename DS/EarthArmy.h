@@ -26,6 +26,7 @@ public:
 	void modifyUML(int timeStep);
 	void Heal(int timeStep);
 	void printFightingUnits();
+	void Armyfile(fstream&, int, int, int, int, int);
 
 };
 #endif
