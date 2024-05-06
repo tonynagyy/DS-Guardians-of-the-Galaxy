@@ -24,6 +24,7 @@ Game::Game()
 		E_Dd = 0;
 		E_Df = 0;
 
+
 }
 
 Game::Game(fstream& input)
@@ -32,6 +33,7 @@ Game::Game(fstream& input)
 	eartharmy = new EarthArmy(this);
 	alienarmy = new AlienArmy(this);
 	pRandGen = new RandGenerator(eartharmy,alienarmy);
+
 	Input = &input;
 	Output.open("output.txt", ios::out);
 	if (!Output.is_open()) {
@@ -159,6 +161,7 @@ void Game::StartWar()
 
 	dynamic_cast<EarthArmy*>(eartharmy)->modifyUML(timestep);
 	dynamic_cast<EarthArmy*>(eartharmy)->Heal(timestep);
+
 
 
 

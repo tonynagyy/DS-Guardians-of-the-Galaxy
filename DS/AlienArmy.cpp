@@ -43,6 +43,7 @@ void AlienArmy::attack(Army* enemy,int timestep)
 		}
 		AlienUnit->attack(&SoldierTemp, timestep,pGame,enemy);
 		
+
 	}
 	/*Here Alien Monster Will attack both tanks and Earth Soldiers Depend on its attack capacity*/
 
@@ -67,6 +68,7 @@ void AlienArmy::attack(Army* enemy,int timestep)
 				else {
 					enemyTemp.enqueue(EarthUnit);
 					AM_attacking_list->enqueue(EarthUnit);
+
 				}
 			}
 			else {
@@ -129,6 +131,7 @@ void AlienArmy::attack(Army* enemy,int timestep)
 						AD_attacking_list->enqueue(EarthUnit);
 					}
 				}
+
 			}
 			
 			AlienUnit->attack(&enemyTemp, timestep, pGame, enemy);
@@ -170,6 +173,123 @@ void AlienArmy::attack(Army* enemy,int timestep)
 			}
 			secAlienUnit->attack(&enemyTemp, timestep, pGame, enemy);
 			
+		}
+		if (AlienUnit)
+			aDronesList.enqueue(AlienUnit);
+		if (secAlienUnit)
+			aDronesList.enqueue(secAlienUnit);
+	}
+
+	if (!aDronesList.isEmpty()) {
+		Unit* secAlienUnit;
+		aDronesList.dequeue(AlienUnit);
+		AD_Attack = AlienUnit;
+		aDronesList.RearDequeue(secAlienUnit);
+		AD2_Attack = secAlienUnit;
+		LinkedQueue<Unit*> enemyTemp;
+		LinkedQueue<Unit*> enemyTemp2;
+
+		if (AlienUnit != nullptr && secAlienUnit != nullptr) {
+			int firtankattacked = AlienUnit->getAttackCapacity() / 2;
+			int firgunneryattacked = AlienUnit->getAttackCapacity() - firtankattacked;
+			int sectankattacked = secAlienUnit->getAttackCapacity() / 2;
+			int secgunneryattacked = secAlienUnit->getAttackCapacity() - sectankattacked;
+
+			for (int i = 0; i < AlienUnit->getAttackCapacity() + secAlienUnit->getAttackCapacity(); i++) {
+				if (i % 2 == 0) {
+					bool isTankEmpty = false;
+					if (i < firtankattacked) {
+						EarthUnit = enemy->removeUnit("ET");
+						if (EarthUnit == nullptr) {
+							firtankattacked = 0;
+							firgunneryattacked = AlienUnit->getAttackCapacity() - i;
+							isTankEmpty = true;
+						}
+						else {
+							enemyTemp.enqueue(EarthUnit);
+						}
+					}
+					else {
+						EarthUnit = enemy->removeUnit("EG");
+						if (EarthUnit == nullptr) {
+							if (!isTankEmpty) {
+								firtankattacked = AlienUnit->getAttackCapacity() - i;
+								firgunneryattacked = 0;
+							}
+							else {
+								break;
+							}
+						}
+						else {
+							enemyTemp.enqueue(EarthUnit);
+						}
+					}
+				}
+				else {
+					bool isTankEmpty = false;
+					if (i < sectankattacked) {
+						EarthUnit = enemy->removeUnit("ET");
+						if (EarthUnit == nullptr) {
+							sectankattacked = 0;
+							secgunneryattacked = secAlienUnit->getAttackCapacity() - i;
+							isTankEmpty = true;
+						}
+						else {
+							enemyTemp2.enqueue(EarthUnit);
+						}
+					}
+					else {
+						EarthUnit = enemy->removeUnit("EG");
+						if (EarthUnit == nullptr) {
+							if (!isTankEmpty) {
+								sectankattacked = secAlienUnit->getAttackCapacity() - i;
+								secgunneryattacked = 0;
+							}
+							else {
+								break;
+							}
+						}
+						else {
+							enemyTemp2.enqueue(EarthUnit);
+						}
+					}
+				}
+			}
+			for (int i = 0; i < enemyTemp.getCount() + enemyTemp2.getCount(); i++) {
+				if (i % 2 == 0) {
+					enemyTemp.dequeue(EarthUnit);
+
+					if (!EarthUnit) break;
+
+					EarthUnit->setfatime(timestep);
+
+					AlienUnit->attack(EarthUnit);
+					AD_attacking_list->enqueue(EarthUnit);
+					if (EarthUnit->getHealth() <= 0)
+					{
+						pGame->AddToKilled(EarthUnit);
+					}
+					else {
+						enemy->addUnit(EarthUnit);
+					}
+				}
+				else {
+					enemyTemp2.dequeue(EarthUnit);
+
+					if (!EarthUnit) break;
+
+					EarthUnit->setfatime(timestep);
+
+					secAlienUnit->attack(EarthUnit);
+					AD2_attacking_list->enqueue(EarthUnit);
+					if (EarthUnit->getHealth() <= 0) {
+						pGame->AddToKilled(EarthUnit);
+					}
+					else {
+						enemy->addUnit(EarthUnit);
+					}
+				}
+			}
 		}
 		if (AlienUnit)
 			aDronesList.enqueue(AlienUnit);
@@ -297,7 +417,6 @@ void AlienArmy::Armyfile(fstream& Output, int AS_dead, int AM_dead, int AD_dead,
 		double Df_avg = (double(Df) / (sum));
 		double Dd_avg = (double(Dd) / (sum));
 		double Db_avg = (double(Df + Dd) / (sum));
-
 		Output << "average of Df = " << Df_avg << endl;
 		Output << "average of Dd = " << Dd_avg << endl;
 		Output << "average of Db = " << Db_avg << endl;

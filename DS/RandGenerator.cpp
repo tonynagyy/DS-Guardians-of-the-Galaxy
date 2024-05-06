@@ -10,6 +10,7 @@ RandGenerator::RandGenerator(Army* Earth , Army* Alien)
 	eartharmy = Earth;
 	alienarmy = Alien;
 
+
 }
 
 void RandGenerator::GenerateArmy(string armytype,int ts)

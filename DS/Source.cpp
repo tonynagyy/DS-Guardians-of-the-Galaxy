@@ -31,6 +31,7 @@ int main() {
 	Game* pGame = new Game(InputFile);
 	int i = 0;
 	while (1){
+
 		if (InputFile.is_open()) {
 			srand(time(0));
 			pGame->GenerateArmy();
@@ -46,6 +47,7 @@ int main() {
 		cout << "Press 'q' to quit or any other key to continue: ";
 		i++;
 		//cin >> key;
+
 		if (key == "q") {
 			break;
 

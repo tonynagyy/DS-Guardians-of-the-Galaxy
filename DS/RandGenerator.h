@@ -26,6 +26,7 @@ class RandGenerator
 	Army * alienarmy;
 public:
 	RandGenerator(Army *,Army*);
+
 	void GenerateArmy(string armytype, int ts);
 	Unit* GenerateUnit(string type, int r_l_p, int r_h_p, int r_l_h, int r_h_h, int r_l_c, int r_h_c);
 
