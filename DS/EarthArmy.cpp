@@ -4,6 +4,12 @@
 
 EarthArmy::EarthArmy(Game* pGame): Army(pGame) {
 	EarthUnit = nullptr;
+	ES_Attack = nullptr;
+	ET_Attack = nullptr;
+	EG_Attack = nullptr;
+	ES_attacking_list = nullptr;
+	ET_attacking_list = nullptr;
+	EG_attacking_list = nullptr;
 }
 
 void EarthArmy::attack(Army* enemy , int timestep)
@@ -35,25 +41,7 @@ void EarthArmy::attack(Army* enemy , int timestep)
 			ES_attacking_list->enqueue(AlienUnit);
 		}
 		/* then we will start to attack them */
-
-		int loopCount = SoldierTemp.getCount();
-
-		for (int i = 0; i < loopCount; i++) {
-			SoldierTemp.dequeue(AlienUnit);
-
-			if (!AlienUnit) break;
-
-			AlienUnit->setfatime(timestep);
-
-			EarthUnit->attack(AlienUnit);
-			if (AlienUnit->getHealth() <= 0)  // after attack i have to check is the soldier dead or not 
-			{
-				pGame->AddToKilled(AlienUnit);
-			}
-			else {
-				enemy->addUnit(AlienUnit);
-			}
-		}
+        EarthUnit->attack(&SoldierTemp, timestep, pGame, enemy);
 	}
 
 	/*Here Earth Tank Will attack Alien Monsters and maybe Soldiers Depend on its attack capacity*/
@@ -104,25 +92,8 @@ void EarthArmy::attack(Army* enemy , int timestep)
 					ET_attacking_list->enqueue(AlienUnit);
 				}
 			}
-            int loopCount=enemyTemp.getCount();
 
-			for (int i = 0; i < loopCount; i++) {
-				enemyTemp.dequeue(AlienUnit);
-
-				if (!AlienUnit) break;
-
-				AlienUnit->setfatime(timestep);
-				EarthUnit->attack(AlienUnit);
-
-				if (AlienUnit->getHealth() <= 0)
-				{
-					pGame->AddToKilled(AlienUnit);
-				}
-				else {
-					enemy->addUnit(AlienUnit);
-				}
-
-			}
+			EarthUnit->attack(&enemyTemp, timestep, pGame, enemy);
 
 		}
 
@@ -138,26 +109,8 @@ void EarthArmy::attack(Army* enemy , int timestep)
 				ET_attacking_list->enqueue(AlienUnit);
 			}
 
-			int loopCount = enemyTemp.getCount();
-
-			for (int i = 0; i < loopCount; i++) {
-
-				enemyTemp.dequeue(AlienUnit);
-
-				if (!AlienUnit) break;
-
-				AlienUnit->setfatime(timestep);
-
-				EarthUnit->attack(AlienUnit);
-
-				if (AlienUnit->getHealth() <= 0)  // after attack i have to check is the Monster dead or not 
-				{
-					pGame->AddToKilled(AlienUnit);
-				}
-				else {
-					enemy->addUnit(AlienUnit);
-				}
-			}
+			EarthUnit->attack(&enemyTemp, timestep, pGame, enemy);
+			
 		}
 	}
 
@@ -209,23 +162,7 @@ void EarthArmy::attack(Army* enemy , int timestep)
 				}
 			}
 		}
-         int loopCount = enemytemp.getCount();
-		for (int i = 0; i < loopCount; i++) {
-			enemytemp.dequeue(AlienUnit);
-
-			if (!AlienUnit) break;
-
-			AlienUnit->setfatime(timestep);
-
-			EarthUnit->attack(AlienUnit);
-			if (AlienUnit->getHealth() <= 0)  // after attack i have to check is the Monster dead or not 
-			{
-				pGame->AddToKilled(AlienUnit);
-			}
-			else {
-				enemy->addUnit(AlienUnit);
-			}
-		}
+         EarthUnit->attack(&enemytemp, timestep, pGame, enemy);
 	}
 }
 
@@ -315,7 +252,7 @@ void EarthArmy::modifyUML(int timeStep)
 
 		if (temp) {
 			if (temp->getHealth() > 0 && temp->getHealth() < 0.2 * temp->getOriginalHealth()) {
-				soldiersUML.enqueue(temp, temp->getHealth());
+				soldiersUML.enqueue(temp, INT_MAX - temp->getHealth());
 				temp->setUMLJoinTime(timeStep);
 			}
 
@@ -326,20 +263,22 @@ void EarthArmy::modifyUML(int timeStep)
 	}
 
 	for (int i = 0; i < loop2; i++) {
-		eTanksList.pop(temp);
-		tempStack.push(temp);
 
-		if (temp) {
+
+		if (eTanksList.pop(temp)) {
 			if (temp->getHealth() > 0 && temp->getHealth() < 0.2 * temp->getOriginalHealth()) {
 				tankUML.enqueue(temp);
 				temp->setUMLJoinTime(timeStep);
 			}
+			else
+				tempStack.push(temp);
 		}
-	}
+		temp = nullptr;
 
-	for (int i = 0; i < loop2; i++) {
-		tempStack.pop(temp);
-		eTanksList.push(temp);
+		for (int i = 0; i < loop2; i++) {
+			if (tempStack.pop(temp))
+				eTanksList.push(temp);
+		}
 	}
 
 }
@@ -368,6 +307,7 @@ void EarthArmy::Heal(int timeStep)
 				}
 
 				else {
+					healList.push(EarthUnit);
 					break;
 				}
 
@@ -376,7 +316,7 @@ void EarthArmy::Heal(int timeStep)
 				}
 
 				else {
-					EarthUnit->attack(unitToHeal);
+					//EarthUnit->attack(unitToHeal);
 
 					if (unitToHeal->getHealth() > 0.2 * unitToHeal->getOriginalHealth()) {
 						this->addUnit(unitToHeal);
@@ -443,17 +383,28 @@ void EarthArmy::Armyfile(fstream& Output, int ES_dead, int ET_dead, int EG_dead,
 	Output << std::fixed << std::setprecision(2);
 	Output << eSoldiersList.getCount() << " ES " << "  " << eTanksList.getCount() << " ET " << "  " << eGunneryList.getCount() << " EG" << endl;
 	Output << endl;
-	Output << ( double(ES_dead) / (eSoldiersList.getCount() + ES_dead)) * 100 << " %(Dead_ES) " << (double(ET_dead) / (eTanksList.getCount() + ET_dead)) * 100 << " %(Dead_ET) " << (double(EG_dead) / (eGunneryList.getCount() + EG_dead)) * 100 << " %(Dead_EG)" << endl;
+	Output << (double(ES_dead) / (eSoldiersList.getCount() + ES_dead)) * 100 << " %(Dead_ES) " << (double(ET_dead) / (eTanksList.getCount() + ET_dead)) * 100 << " %(Dead_ET) " << (double(EG_dead) / (eGunneryList.getCount() + EG_dead)) * 100 << " %(Dead_EG)" << endl;
 	Output << endl;
 	Output << (double(ES_dead + ET_dead + EG_dead) / (eSoldiersList.getCount() + eTanksList.getCount() + eGunneryList.getCount() + ES_dead + ET_dead + EG_dead)) * 100 << " %(Dead_EarthUnits)" << endl;
 	Output << endl;
-	int Df_avg = (double(Df) / (ES_dead + ET_dead + EG_dead));
-	int Dd_avg = (double(Dd) / (ES_dead + ET_dead + EG_dead));
-	int Db_avg = (double(Df + Dd) / (ES_dead + ET_dead + EG_dead));
-	Output << "average of Df = " << Df_avg << endl;
-	Output << "average of Dd = " << Dd_avg << endl;
-	Output << "average of Db = " << Db_avg << endl;
-	Output << endl;	
-	Output << "Df/Db % = " << (double(Df_avg) / Db_avg) * 100 << endl;
-	Output << "Dd/Db % = " << (double(Dd_avg) / Db_avg) * 100 << endl;
+	int sum = ES_dead + ET_dead + EG_dead;
+	if (sum != 0) {
+		double Df_avg = (double(Df) / (sum));
+		double Dd_avg = (double(Dd) / (sum));
+		double Db_avg = (double(Df + Dd) / (sum));
+		Output << "average of Df = " << Df_avg << endl;
+		Output << "average of Dd = " << Dd_avg << endl;
+		Output << "average of Db = " << Db_avg << endl;
+		Output << endl;
+		Output << "Df/Db % = " << (double(Df_avg) / Db_avg) * 100 << endl;
+		Output << "Dd/Db % = " << (double(Dd_avg) / Db_avg) * 100 << endl;
+	}
+	else {
+		Output << "average of Df = 0 %" << endl;
+		Output << "average of Dd = 0 %" << endl;
+		Output << "average of Db = 0 %" << endl;
+		Output << endl;
+		Output << "Df/Db % = 0" << endl;
+		Output << "Dd/Db % = 0" << endl;
+	}
 }

@@ -4,11 +4,11 @@
 int RandGenerator::E_ID = 0;
 int RandGenerator::A_ID = 2000;
 
-RandGenerator::RandGenerator(Game* game)
+RandGenerator::RandGenerator(Army* Earth , Army* Alien)
 {
 	
-
-	pGame = game;
+	eartharmy = Earth;
+	alienarmy = Alien;
 
 }
 
@@ -18,8 +18,6 @@ void RandGenerator::GenerateArmy(string armytype,int ts)
 
 	srand(time(0));
 
-	Army* eartharmy = pGame->getEarthArmy();
-	Army* alienarmy = pGame->getAlienArmy();
 
 	if (armytype == "Earth") {
 		Unit* Earth_unit;
@@ -79,7 +77,7 @@ Unit* RandGenerator::GenerateUnit(string type, int r_l_p, int r_h_p, int r_l_h, 
 	int attack_capacity = r_l_c + rand() % (r_h_c - r_l_c + 1);
 
 	if (type == "HU") {
-		//Army_unit = new HealingUnit(E_ID++, TS, health, power, attack_capacity);
+		Army_unit = new healUnit(E_ID++, TS, health, power, attack_capacity);
 	}
 	else if (type == "ES") {
 		Army_unit = new EarthSoldier(E_ID++, TS, health, power, attack_capacity);
