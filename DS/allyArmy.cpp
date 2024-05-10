@@ -10,6 +10,15 @@ void allyArmy::attack(Army* enemy, int timestep)
 {
 }
 
+void allyArmy::Withdrawal()
+{
+	Unit* su;
+	while (saverUnitsList.dequeue(su)) {
+		delete su;
+		su = NULL;
+	}
+}
+
 void allyArmy::addUnit(Unit* allyUnit)
 {
 	if (dynamic_cast<saverUnit*>(allyUnit)) {

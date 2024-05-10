@@ -5,8 +5,9 @@ Game::Game()
 	timestep = 0;
 	eartharmy = NULL;
 	alienarmy = NULL;
+	allyarmy = NULL;
 	Input = NULL;
-	pRandGen = new RandGenerator(nullptr,nullptr);
+	pRandGen = new RandGenerator(nullptr,nullptr,nullptr);
 	Output.open("output.txt", ios::out);
         if (!Output.is_open()) {
 		  std::cerr << "Failed to open output.txt for writing.\n";
@@ -32,7 +33,8 @@ Game::Game(fstream& input)
 	timestep = 0;
 	eartharmy = new EarthArmy(this);
 	alienarmy = new AlienArmy(this);
-	pRandGen = new RandGenerator(eartharmy,alienarmy);
+	allyarmy = new allyArmy(this);
+	pRandGen = new RandGenerator(eartharmy,alienarmy,allyarmy);
 
 	Input = &input;
 	Output.open("output.txt", ios::out);
@@ -97,26 +99,34 @@ void Game::LoadParameters(fstream& input)
 {
 	int N;
 	int HU, ES, ET, EG, AS, AM, AD, Prob, R_E_L_P, R_E_H_P , R_E_L_H , R_E_H_H , R_E_L_C , R_E_H_C,
-		R_A_L_P , R_A_H_P , R_A_L_H , R_A_H_H , R_A_L_C , R_A_H_C;
+		R_A_L_P , R_A_H_P , R_A_L_H , R_A_H_H , R_A_L_C , R_A_H_C, R_SU_L_P, R_SU_H_P, R_SU_L_H,
+		R_SU_H_H, R_SU_L_C, R_SU_H_C;
 	int infectionProbability; // related to bonus
+	
 
 	input >> N;
 	input >> HU >> ES >> ET >> EG >> AS >> AM >> AD >> Prob;
 	input >> R_E_L_P >> R_E_H_P >> R_E_L_H >> R_E_H_H >> R_E_L_C >> R_E_H_C;
 	input >> R_A_L_P >> R_A_H_P >> R_A_L_H >> R_A_H_H >> R_A_L_C >> R_A_H_C;
+	input >> R_SU_L_P >> R_SU_H_P >> R_SU_L_H >> R_SU_H_H >> R_SU_L_C >> R_SU_H_C;
 	//input >> infectionProbability; // related to bonus
+	input >> infectionthreshold;
 	R_E_H_P *= -1;
 	R_E_H_H *= -1;
 	R_E_H_C *= -1;
 	R_A_H_P *= -1;
 	R_A_H_H *= -1;
 	R_A_H_C *= -1;
+	R_SU_H_P *= -1;
+	R_SU_H_H *= -1;
+	R_SU_H_C *= -1;
 
 	pRandGen->setN(N);
 	pRandGen->setPer(HU, ES, ET, EG, AS, AM, AD);
 	pRandGen->setProb(Prob);
 	pRandGen->setRange(R_E_L_P, R_E_H_P, R_E_L_H, R_E_H_H, R_E_L_C, R_E_H_C,
-		R_A_L_P, R_A_H_P, R_A_L_H, R_A_H_H, R_A_L_C, R_A_H_C);
+		R_A_L_P, R_A_H_P, R_A_L_H, R_A_H_H, R_A_L_C, R_A_H_C, R_SU_L_P, R_SU_H_P, R_SU_L_H,
+		R_SU_H_H, R_SU_L_C, R_SU_H_C);
 	//infectionProb = infectionProbability; // related to bonus
 	 
 }
@@ -127,6 +137,10 @@ void Game::GenerateArmy()
 	LoadParameters(*Input);
 	pRandGen->GenerateArmy("Earth",timestep);
 	pRandGen->GenerateArmy("Alien", timestep);
+
+	if (dynamic_cast<EarthArmy*>(eartharmy)->calcinfectedperc() >= infectionthreshold) {
+		pRandGen->GenerateArmy("Ally", timestep);
+	}
 }
 
 Army* Game::getEarthArmy()
@@ -161,11 +175,14 @@ void Game::StartWar()
 {
 	eartharmy->attack(alienarmy,timestep);
 	alienarmy->attack(eartharmy,timestep);
+	allyarmy->attack(alienarmy,timestep);
 
 	dynamic_cast<EarthArmy*>(eartharmy)->modifyUML(timestep);
 	dynamic_cast<EarthArmy*>(eartharmy)->Heal(timestep);
 
-
+	if (dynamic_cast<EarthArmy*>(eartharmy)->calcinfectedperc() == 0) {
+		dynamic_cast<allyArmy*>(allyarmy)->Withdrawal();
+	}
 
 
 }

@@ -6,7 +6,7 @@
 
 class EarthArmy : public Army
 {
-
+	int infectedSoldiers;
 	LinkedQueue<Unit*> eSoldiersList;
 	ArrayStack<Unit*> eTanksList;
 	priQueue<Unit*> eGunneryList;
@@ -29,5 +29,9 @@ public:
 	void printFightingUnits();
 	void Armyfile(fstream&, int, int, int, int, int);
 
+	void incrementinfectedcount();
+	void decrementinfectedcount();
+
+	int calcinfectedperc();
 };
 #endif

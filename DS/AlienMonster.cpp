@@ -15,6 +15,7 @@ AlienMonster::AlienMonster(int id, int jointime, double health, double power, in
 
 void AlienMonster::attack(LinkedQueue <Unit*>* SoldierTemp, int timestep, Game* pGame, Army* enemy)
 {
+	Army* eartharmy = pGame->getEarthArmy();
 	Unit* EarthUnit;
 	int infectionProb = pGame->getInfectionProb();
 
@@ -34,6 +35,7 @@ void AlienMonster::attack(LinkedQueue <Unit*>* SoldierTemp, int timestep, Game* 
 
 		if (randNum <= infectionProb && !EarthUnit->getImmunityStatus()) {
 			EarthUnit->setInfectionStatus(true);
+			dynamic_cast<EarthArmy*>(eartharmy)->incrementinfectedcount();
 			enemy->addUnit(EarthUnit);
 		}
 
