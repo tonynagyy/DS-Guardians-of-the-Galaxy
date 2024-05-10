@@ -2,12 +2,14 @@
 #define GAME_EA
 #include <fstream>
 #include "Army.h"
+#include"allyArmy.h"
 #include "RandGenerator.h"
 
 class Game
 {
 	Army* alienarmy;
 	Army* eartharmy;
+	Army* allyarmy;
 	LinkedQueue <Unit*> KilledList;
 	int ES_dead, ET_dead, EG_dead, AS_dead, AM_dead, AD_dead;
 	int E_Df, E_Dd,A_Df,A_Dd;
@@ -19,6 +21,7 @@ class Game
 	// bonus related
 
 	int infectionProb;
+	int infectionthreshold;
 
 public:
 	Game();

@@ -11,6 +11,7 @@ EarthArmy::EarthArmy(Game* pGame) : Army(pGame) {
 	ET_attacking_list = nullptr;
 	EG_attacking_list = nullptr;
 	doneHealing = false;
+	infectedSoldiers = 0;
 }
 
 void EarthArmy::attack(Army* enemy, int timestep)
@@ -455,4 +456,19 @@ void EarthArmy::Armyfile(fstream& Output, int ES_dead, int ET_dead, int EG_dead,
 		Output << "Df/Db % = 0" << endl;
 		Output << "Dd/Db % = 0" << endl;
 	}
+}
+
+void EarthArmy::incrementinfectedcount()
+{
+	infectedSoldiers++;
+}
+
+void EarthArmy::decrementinfectedcount()
+{
+	infectedSoldiers--;
+}
+
+int EarthArmy::calcinfectedperc()
+{
+	return double(infectedSoldiers)/eSoldiersList.getCount();
 }
