@@ -26,6 +26,7 @@ Game::Game()
 		ES_dead = 0;
 		ET_dead = 0;
 		EG_dead = 0;
+		HU_dead = 0;
 		AS_dead = 0;
 		AM_dead = 0;
 		AD_dead = 0;
@@ -33,6 +34,7 @@ Game::Game()
 		A_Df = 0;
 		E_Dd = 0;
 		E_Df = 0;
+
 
 
 }
@@ -63,6 +65,7 @@ Game::Game(fstream& input)
 	ES_dead = 0;
 	ET_dead = 0;
 	EG_dead = 0;
+	HU_dead = 0;
 	AS_dead = 0;
 	AM_dead = 0;
 	AD_dead = 0;
@@ -86,6 +89,11 @@ void Game::AddToKilled(Unit* Dead)
 	}
 	else if (dynamic_cast<EarthGunnery*>(Dead)) {
 		EG_dead++;
+		E_Dd = E_Dd + timestep - (Dead->getfatime());
+		E_Df = E_Df + (Dead->getfatime()) - (Dead->getJoinTime());
+	}
+	else if (dynamic_cast<healUnit*>(Dead)) {
+		HU_dead++;
 		E_Dd = E_Dd + timestep - (Dead->getfatime());
 		E_Df = E_Df + (Dead->getfatime()) - (Dead->getJoinTime());
 	}
@@ -124,7 +132,6 @@ void Game::LoadParameters(fstream& input)
 	int HU, ES, ET, EG, AS, AM, AD, Prob, R_E_L_P, R_E_H_P , R_E_L_H , R_E_H_H , R_E_L_C , R_E_H_C,
 		R_A_L_P , R_A_H_P , R_A_L_H , R_A_H_H , R_A_L_C , R_A_H_C, R_SU_L_P, R_SU_H_P, R_SU_L_H,
 		R_SU_H_H, R_SU_L_C, R_SU_H_C;
-	int infectionProbability; // related to bonus
 	
 
 	input >> N;
@@ -132,7 +139,6 @@ void Game::LoadParameters(fstream& input)
 	input >> R_E_L_P >> R_E_H_P >> R_E_L_H >> R_E_H_H >> R_E_L_C >> R_E_H_C;
 	input >> R_A_L_P >> R_A_H_P >> R_A_L_H >> R_A_H_H >> R_A_L_C >> R_A_H_C;
 	input >> R_SU_L_P >> R_SU_H_P >> R_SU_L_H >> R_SU_H_H >> R_SU_L_C >> R_SU_H_C;
-	//input >> infectionProbability; // related to bonus
 	input >> infectionthreshold;
 	R_E_H_P *= -1;
 	R_E_H_H *= -1;
@@ -150,7 +156,6 @@ void Game::LoadParameters(fstream& input)
 	pRandGen->setRange(R_E_L_P, R_E_H_P, R_E_L_H, R_E_H_H, R_E_L_C, R_E_H_C,
 		R_A_L_P, R_A_H_P, R_A_L_H, R_A_H_H, R_A_L_C, R_A_H_C, R_SU_L_P, R_SU_H_P, R_SU_L_H,
 		R_SU_H_H, R_SU_L_C, R_SU_H_C);
-	//infectionProb = infectionProbability; // related to bonus
 	 
 }
 
@@ -213,7 +218,7 @@ void Game::StartWar()
 
 int Game::getInfectionProb()
 {
-	return infectionProb;
+	return infectionthreshold;
 }
 
 Game::~Game()
@@ -221,9 +226,9 @@ Game::~Game()
 	Output<<endl;
 	Output<<endl;
 	Output << "====================== Final Earth Army ===================== " << endl;
-	eartharmy->Armyfile(Output,ES_dead,ET_dead,EG_dead,E_Df,E_Dd);
+	eartharmy->Armyfile(Output,E_Df,E_Dd, ES_dead, ET_dead, EG_dead, HU_dead);
 	Output << "====================== Final Alien Army ===================== " << endl;
-	alienarmy->Armyfile(Output,AS_dead,AM_dead,AD_dead, E_Df, E_Dd);
+	alienarmy->Armyfile(Output, E_Df, E_Dd, AS_dead, AM_dead, AD_dead);
 	Output.close();
 	if (!eartharmy)
 		delete eartharmy;

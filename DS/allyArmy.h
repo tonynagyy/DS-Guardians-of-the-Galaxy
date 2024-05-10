@@ -18,7 +18,7 @@ public:
     int getSoldiersCount();
     void printArmy();
     void printFightingUnits();
-    void Armyfile(fstream&, int, int, int, int, int);
+    void Armyfile(fstream&, int, int, int, int, int,int);
 };
 
 #endif

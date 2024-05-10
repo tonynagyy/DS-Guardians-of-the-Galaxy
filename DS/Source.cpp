@@ -13,6 +13,10 @@
 //#include"EarthArmy.h"
 ostream& operator<<(ostream& os, const Unit* item) {
 	os << item->getID();  // Print the ID of the unit
+	if (item->getType() == "ES") {
+		if(item->getInfectionStatus() == true)
+			os << " infected ";
+	}
 	return os;
 }
 using namespace std;

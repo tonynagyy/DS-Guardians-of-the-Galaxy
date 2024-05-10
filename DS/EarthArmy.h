@@ -7,6 +7,7 @@
 class EarthArmy : public Army
 {
 	int infectedSoldiers;
+	int all_infectedSoldiers; // to calculate the percentage of all infected soldiers(even the healed ones)
 	LinkedQueue<Unit*> eSoldiersList;
 	ArrayStack<Unit*> eTanksList;
 	priQueue<Unit*> eGunneryList;
@@ -28,11 +29,11 @@ public:
 	void modifyUML(int timeStep);
 	void Heal(int timeStep);
 	void printFightingUnits();
-	void Armyfile(fstream&, int, int, int, int, int);
+	void Armyfile(fstream&, int, int, int, int, int,int);
 
 	void incrementinfectedcount();
 	void decrementinfectedcount();
 
-	int calcinfectedperc();
+	double calcinfectedperc();
 };
 #endif

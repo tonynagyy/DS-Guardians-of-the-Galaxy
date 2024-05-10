@@ -283,7 +283,7 @@ void AlienArmy::printFightingUnits()
 
 }
 
-void AlienArmy::Armyfile(fstream& Output, int AS_dead, int AM_dead, int AD_dead, int Df, int Dd)
+void AlienArmy::Armyfile(fstream& Output, int Df, int Dd, int AS_dead, int AM_dead, int AD_dead, int X_dead =0)
 {
 	Output << std::fixed << std::setprecision(2);
 	Output << aSoldiersList.getCount() << " AS " << "  " << aMonstersList.getCount() << " AM " << "  " << aDronesList.getCount() << " AD" << endl;

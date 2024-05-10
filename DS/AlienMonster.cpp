@@ -44,6 +44,7 @@ void AlienMonster::attack(LinkedQueue <Unit*>* SoldierTemp, int timestep, Game* 
 
 			if (EarthUnit->getHealth() <= 0)
 			{
+				dynamic_cast<EarthArmy*>(eartharmy)->decrementinfectedcount();
 				pGame->AddToKilled(EarthUnit);
 			}
 			else {

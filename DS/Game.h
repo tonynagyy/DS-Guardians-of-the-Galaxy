@@ -11,7 +11,7 @@ class Game
 	Army* eartharmy;
 	Army* allyarmy;
 	LinkedQueue <Unit*> KilledList;
-	int ES_dead, ET_dead, EG_dead, AS_dead, AM_dead, AD_dead;
+	int ES_dead, ET_dead, EG_dead, HU_dead , AS_dead, AM_dead, AD_dead;
 	int E_Df, E_Dd,A_Df,A_Dd;
 	RandGenerator* pRandGen;
 	int timestep;

@@ -55,6 +55,6 @@ void allyArmy::printFightingUnits()
 
 }
 
-void allyArmy::Armyfile(fstream&, int, int, int, int, int)
+void allyArmy::Armyfile(fstream&, int, int, int, int, int,int)
 {
 }
