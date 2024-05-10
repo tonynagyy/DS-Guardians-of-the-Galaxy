@@ -98,11 +98,13 @@ void Game::LoadParameters(fstream& input)
 	int N;
 	int HU, ES, ET, EG, AS, AM, AD, Prob, R_E_L_P, R_E_H_P , R_E_L_H , R_E_H_H , R_E_L_C , R_E_H_C,
 		R_A_L_P , R_A_H_P , R_A_L_H , R_A_H_H , R_A_L_C , R_A_H_C;
+	int infectionProbability; // related to bonus
 
 	input >> N;
 	input >> HU >> ES >> ET >> EG >> AS >> AM >> AD >> Prob;
 	input >> R_E_L_P >> R_E_H_P >> R_E_L_H >> R_E_H_H >> R_E_L_C >> R_E_H_C;
 	input >> R_A_L_P >> R_A_H_P >> R_A_L_H >> R_A_H_H >> R_A_L_C >> R_A_H_C;
+	//input >> infectionProbability; // related to bonus
 	R_E_H_P *= -1;
 	R_E_H_H *= -1;
 	R_E_H_C *= -1;
@@ -115,7 +117,8 @@ void Game::LoadParameters(fstream& input)
 	pRandGen->setProb(Prob);
 	pRandGen->setRange(R_E_L_P, R_E_H_P, R_E_L_H, R_E_H_H, R_E_L_C, R_E_H_C,
 		R_A_L_P, R_A_H_P, R_A_L_H, R_A_H_H, R_A_L_C, R_A_H_C);
-
+	//infectionProb = infectionProbability; // related to bonus
+	 
 }
 
 void Game::GenerateArmy()
@@ -165,6 +168,11 @@ void Game::StartWar()
 
 
 
+}
+
+int Game::getInfectionProb()
+{
+	return infectionProb;
 }
 
 Game::~Game()

@@ -15,6 +15,13 @@ Unit::Unit(int id, string type, int jointime, double health, double power, int a
 	attackCapacity = attackcapacity;
 	fAtime = 0;
 	DEStime = 0;
+	infected = false;
+	immune = false;
+	healingCounter = 0;
+}
+
+Unit::~Unit()
+{
 }
 
 void Unit::setID(int id)
@@ -119,4 +126,36 @@ void Unit::print()
 {
    
 
+}
+
+void Unit::setInfectionStatus(bool val)
+{
+	infected = val;
+}
+
+bool Unit::getInfectionStatus() const
+{
+	return infected;
+}
+
+void Unit::setImmunityStatus(bool val)
+{
+	immune = val;
+}
+
+bool Unit::getImmunityStatus() const
+{
+	return immune;
+}
+
+
+
+void Unit::setHealingCounter(int val)
+{
+	healingCounter = val;
+}
+
+int Unit::getHealingCounter() const
+{
+	return healingCounter;
 }

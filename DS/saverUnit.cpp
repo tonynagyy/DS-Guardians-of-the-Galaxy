@@ -6,5 +6,4 @@ saverUnit::saverUnit(int id, int jointime, double health, double power, int atta
 
 void saverUnit::attack(LinkedQueue<Unit*>* enemyTemp, int timestep, Game* pGame, Army* enemy)
 {
-
 }

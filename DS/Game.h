@@ -16,6 +16,10 @@ class Game
 	fstream* Input;
 	fstream Output;
 
+	// bonus related
+
+	int infectionProb;
+
 public:
 	Game();
 	Game(fstream& input);
@@ -26,6 +30,7 @@ public:
 	Army* getAlienArmy();
 	void print();
 	void StartWar();
+	int getInfectionProb();
 	~Game();
 };
 #endif

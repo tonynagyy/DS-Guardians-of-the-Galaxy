@@ -10,6 +10,7 @@ EarthArmy::EarthArmy(Game* pGame) : Army(pGame) {
 	ES_attacking_list = nullptr;
 	ET_attacking_list = nullptr;
 	EG_attacking_list = nullptr;
+	doneHealing = false;
 }
 
 void EarthArmy::attack(Army* enemy, int timestep)
@@ -290,20 +291,26 @@ void EarthArmy::Heal(int timeStep)
 	/*Here Earth healUnit Will heal Earth Soldiers and tanks Depend on its attack capacity*/
 	if (!healList.isEmpty()) {
 		healList.pop(EarthUnit);
-		LinkedQueue<Unit*> tempList;
 		Unit* unitToHeal;
 		double tempHealth;
 		int healCapacity = EarthUnit->getAttackCapacity();
+		LinkedQueue<Unit*> needHealingList;
+
 
 		if (EarthUnit) {
+
+			doneHealing = false;
+
 			for (int i = 0; i < healCapacity; i++) {
 
 				if (!soldiersUML.isEmpty()) {
 					soldiersUML.dequeue(unitToHeal, tempHealth);
+					needHealingList.enqueue(unitToHeal);
 				}
 
 				else if (!tankUML.isEmpty()) {
 					tankUML.dequeue(unitToHeal);
+					needHealingList.enqueue(unitToHeal);
 				}
 
 				else {
@@ -311,30 +318,17 @@ void EarthArmy::Heal(int timeStep)
 					break;
 				}
 
-				if (timeStep - unitToHeal->getUMLJoinTime() > 10) {
-					pGame->AddToKilled(unitToHeal);
-				}
-
-				else {
-					//EarthUnit->attack(unitToHeal);
-
-					if (unitToHeal->getHealth() > 0.2 * unitToHeal->getOriginalHealth()) {
-						this->addUnit(unitToHeal);
-					}
-
-					else {
-						tempList.enqueue(unitToHeal);
-					}
-
-				}
-
 			}
 
-			for (int i = 0; i < tempList.getCount(); i++) {
+			EarthUnit->attack(&needHealingList, timeStep, pGame, this);
 
-				if (tempList.dequeue(unitToHeal)) {
+			LinkedQueue<Unit*>* tempList = dynamic_cast<healUnit*>(EarthUnit)->getTempList();
+			
+			for (int i = 0; i < tempList->getCount(); i++) {
+
+				if (tempList->dequeue(unitToHeal)) {
 					if (dynamic_cast<EarthSoldier*>(unitToHeal)) {
-						soldiersUML.enqueue(unitToHeal, unitToHeal->getHealth());
+						soldiersUML.enqueue(unitToHeal, INT_MAX - unitToHeal->getHealth());
 					}
 
 					else if (dynamic_cast<EarthTank*>(unitToHeal)) {
@@ -343,9 +337,6 @@ void EarthArmy::Heal(int timeStep)
 				}
 
 			}
-
-			pGame->AddToKilled(EarthUnit);
-
 		}
 
 	}

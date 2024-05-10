@@ -16,6 +16,7 @@ class EarthArmy : public Army
 	Unit* EarthUnit;
 	Unit* ES_Attack, * ET_Attack, * EG_Attack;
 	LinkedQueue<Unit*>* ES_attacking_list, * ET_attacking_list, * EG_attacking_list;
+	bool doneHealing;
 public:
 	EarthArmy(Game* pGame);
 	void attack(Army* enemy, int timestep);
