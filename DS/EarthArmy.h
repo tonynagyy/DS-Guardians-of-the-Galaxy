@@ -20,6 +20,7 @@ class EarthArmy : public Army
 public:
 	EarthArmy(Game* pGame);
 	void attack(Army* enemy, int timestep);
+	void InfectionSpread();
 	void addUnit(Unit*) ;
 	Unit* removeUnit(string type) ;
 	int getSoldiersCount();

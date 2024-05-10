@@ -32,18 +32,37 @@ void EarthArmy::attack(Army* enemy, int timestep)
 		ES_Attack = EarthUnit; // for printing
 
 		LinkedQueue<Unit*> SoldierTemp;
-		/*First we will get the soldiers that will be attacked*/
-		for (int i = 0;i < EarthUnit->getAttackCapacity();i++) {
-			AlienUnit = enemy->removeUnit("AS");
 
-			if (!AlienUnit) break;
+		if (!EarthUnit->getInfectionStatus()) {
+			/*First we will get the soldiers that will be attacked*/
+			for (int i = 0;i < EarthUnit->getAttackCapacity();i++) {
+				AlienUnit = enemy->removeUnit("AS");
 
-			SoldierTemp.enqueue(AlienUnit);
-			ES_attacking_list->enqueue(AlienUnit);
+				if (!AlienUnit) break;
+
+				SoldierTemp.enqueue(AlienUnit);
+				ES_attacking_list->enqueue(AlienUnit);
+			}
+			/* then we will start to attack them */
+			EarthUnit->attack(&SoldierTemp, timestep, pGame, enemy);
 		}
-		/* then we will start to attack them */
-		EarthUnit->attack(&SoldierTemp, timestep, pGame, enemy);
+		else {
+			Unit* Earth_attackedUnit;
+
+			/*First we will get the soldiers that will be attacked*/
+			for (int i = 0;i < EarthUnit->getAttackCapacity();i++) {
+				Earth_attackedUnit = this->removeUnit("ES");
+
+				if (!Earth_attackedUnit) break;
+
+				SoldierTemp.enqueue(Earth_attackedUnit);
+				ES_attacking_list->enqueue(Earth_attackedUnit);
+			}
+			/* then we will start to attack them */
+			EarthUnit->attack(&SoldierTemp, timestep, pGame, enemy);
+		}
 	}
+
 
 	/*Here Earth Tank Will attack Alien Monsters and maybe Soldiers Depend on its attack capacity*/
 
@@ -166,6 +185,44 @@ void EarthArmy::attack(Army* enemy, int timestep)
 		EarthUnit->attack(&enemytemp, timestep, pGame, enemy);
 	}
 }
+
+void EarthArmy::InfectionSpread() {
+	if (rand() < 0.02) {
+		LinkedQueue<Unit*> temp_ES_List;
+		int randES = rand() % eSoldiersList.getCount();
+		Unit* theinfected = nullptr;
+		Unit* theinfectiuos = nullptr;
+		int count = eSoldiersList.getCount();
+		for (int i = 0; i < count; i++) {
+			Unit* temp;
+			eSoldiersList.dequeue(temp);
+			temp_ES_List.enqueue(temp);
+			if (i == randES) {
+				theinfected = temp;
+			}
+			if (temp->getInfectionStatus()) {
+			 theinfectiuos = temp;
+			 if (i == randES && randES == eSoldiersList.getCount() - 1)
+			 {
+				  temp_ES_List.peek(theinfected);
+			 }
+			 else if (i == randES) {
+				 randES = i+1 + rand() % (eSoldiersList.getCount()-i-1);//get another random number
+			 }
+			}
+		}
+		if (theinfected && theinfectiuos) {
+			theinfected->setInfectionStatus(true);
+		}
+		for (int i = 0; i < count; i++) {
+			Unit* temp;
+			temp_ES_List.dequeue(temp);
+			eSoldiersList.enqueue(temp);
+		}
+	}
+
+}
+
 
 void EarthArmy::addUnit(Unit* EarthUnit)
 {
@@ -344,17 +401,17 @@ void EarthArmy::Heal(int timeStep)
 
 void EarthArmy::printFightingUnits()
 {
-	if (ES_Attack && !ES_attacking_list->isEmpty()) {
+	if (ES_Attack && ES_attacking_list && !ES_attacking_list->isEmpty()) {
 		std::cout << "ES " << ES_Attack->getID() << " Shots ";
 		ES_attacking_list->print();
 	}
 
-	if (ET_Attack && !ET_attacking_list->isEmpty()) {
+	if (ET_Attack && ET_attacking_list && !ET_attacking_list->isEmpty()) {
 		std::cout << "ET " << ET_Attack->getID() << " Shots ";
 		ET_attacking_list->print();
 	}
 
-	if (EG_Attack && !EG_attacking_list->isEmpty()) {
+	if (EG_Attack &&  EG_attacking_list && !EG_attacking_list->isEmpty()) {
 		std::cout << "EG " << EG_Attack->getID() << " Shots ";
 		EG_attacking_list->print();
 	}

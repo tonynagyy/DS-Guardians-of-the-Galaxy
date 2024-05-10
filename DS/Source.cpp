@@ -30,29 +30,28 @@ int main() {
 	// Create a game object
 	Game* pGame = new Game(InputFile);
 	int i = 0;
-	while (1){
+	while (i<50){
 
 		if (InputFile.is_open()) {
 			srand(time(0));
 			pGame->GenerateArmy();
         }
-	
+		cout<< "before start the next timestep"<<endl;
+		pGame->print();
 
 		// Start the war
 		pGame->StartWar();
-
-		cout << "after the war: -----------------################################------------------" << endl;
-
+        cout << "after start the next timestep" << endl;
 		pGame->print();
 		cout << "Press 'q' to quit or any other key to continue: ";
 		i++;
-		//cin >> key;
+		cin >> key;
 
 		if (key == "q") {
 			break;
 
 		}
-		
+		system("CLS");
 	}
 
 	// Deallocate memory 

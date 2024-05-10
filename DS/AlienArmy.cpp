@@ -252,21 +252,21 @@ void AlienArmy::printArmy()
 
 void AlienArmy::printFightingUnits()
 {
-	if (AS_Attack && !AS_attacking_list->isEmpty()) {
+	if (AS_Attack && AS_attacking_list && !AS_attacking_list->isEmpty()) {
 		std::cout << "AS " << AS_Attack->getID() << " Shots ";
 		AS_attacking_list->print();
 	}
 
-	if (AM_Attack && !AM_attacking_list->isEmpty()) {
+	if (AM_Attack && AM_attacking_list && !AM_attacking_list->isEmpty()) {
 		std::cout << "AM " << AM_Attack->getID() << " Shots ";
 		AM_attacking_list->print();
 	}
 
-	if (AD_Attack && !AD_attacking_list->isEmpty()) {
+	if (AD_Attack && AD_attacking_list && !AD_attacking_list->isEmpty()) {
 		std::cout << "AD " << AD_Attack->getID() << " Shots ";
 		AD_attacking_list->print();
 	}
-	if (AD2_Attack && !AD2_attacking_list->isEmpty()) {
+	if (AD2_Attack && AD2_attacking_list && !AD2_attacking_list->isEmpty()) {
 		std::cout << "AD " << AD2_Attack->getID() << " Shots ";
 		AD2_attacking_list->print();
 	}

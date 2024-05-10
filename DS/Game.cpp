@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <iomanip> 
 
 Game::Game()
 {
@@ -11,7 +12,15 @@ Game::Game()
         if (!Output.is_open()) {
 		  std::cerr << "Failed to open output.txt for writing.\n";
 		} else {
-		  Output << "Td" << "    " << "ID" << "    " << "Tj" << "    " << "Df" << "    " << "Dd" << "    " << "Db" << endl;
+			Output << "+-----------+-----------+-----------+-----------+-----------+-----------+" << endl;
+			Output << "| " << std::right << std::setw(5) << "Td" << std::setw(5) << ""
+				<< "| " << std::setw(5) << "ID" << std::setw(5) << ""
+				<< "| " << std::setw(5) << "Tj" << std::setw(5) << ""
+				<< "| " << std::setw(5) << "Df" << std::setw(5) << ""
+				<< "| " << std::setw(5) << "Dd" << std::setw(5) << ""
+				<< "| " << std::setw(5) << "Db" << std::setw(5) << "" << " |" << endl;
+			Output << "+-----------+-----------+-----------+-----------+-----------+-----------+" << endl;
+
 		}
 		ES_dead = 0;
 		ET_dead = 0;
@@ -40,7 +49,14 @@ Game::Game(fstream& input)
 		std::cerr << "Failed to open output.txt for writing.\n";
 	}
 	else {
-		Output << "Td" << "    " << "ID" << "    " << "Tj" << "    " << "Df" << "    " << "Dd" << "    " << "Db" << endl;
+		Output << "+-----------+-----------+-----------+-----------+-----------+-----------+" << endl;
+		Output << "| " << std::right << std::setw(5) << "Td" << std::setw(5) << ""
+			<< "| " << std::setw(5) << "ID" << std::setw(5) << ""
+			<< "| " << std::setw(5) << "Tj" << std::setw(5) << ""
+			<< "| " << std::setw(5) << "Df" << std::setw(5) << ""
+			<< "| " << std::setw(5) << "Dd" << std::setw(5) << ""
+			<< "| " << std::setw(5) << "Db" << std::setw(5) << "" << " |" << endl;
+		Output << "+-----------+-----------+-----------+-----------+-----------+-----------+" << endl;
 	}
 	ES_dead = 0;
 	ET_dead = 0;
@@ -89,7 +105,14 @@ void Game::AddToKilled(Unit* Dead)
 	}
 	
 
-	Output << timestep<<"    " << Dead->getID() << "    " << Dead->getJoinTime() << "    " << (Dead->getfatime()) - (Dead->getJoinTime()) << "    " << timestep -(Dead->getfatime()) << "    " << (timestep)- (Dead->getJoinTime()) << endl;
+	Output << "| " << std::right << std::setw(5) << timestep << std::setw(5) << ""
+		<< "| " << std::setw(5) << Dead->getID() << std::setw(5) << ""
+		<< "| " << std::setw(5) << Dead->getJoinTime() << std::setw(5) << ""
+		<< "| " << std::setw(5) << (Dead->getfatime()) - (Dead->getJoinTime()) << std::setw(5) << ""
+		<< "| " << std::setw(5) << timestep - (Dead->getfatime()) << std::setw(5) << ""
+		<< "| " << std::setw(5) << (timestep)-(Dead->getJoinTime()) << std::setw(5) << "" << " |" << endl;
+	Output << "+-----------+-----------+-----------+-----------+-----------+-----------+" << endl;
+
 	KilledList.enqueue(Dead);
 }
 
@@ -164,6 +187,7 @@ void Game::StartWar()
 
 	dynamic_cast<EarthArmy*>(eartharmy)->modifyUML(timestep);
 	dynamic_cast<EarthArmy*>(eartharmy)->Heal(timestep);
+	dynamic_cast<EarthArmy*>(eartharmy)->InfectionSpread();
 
 
 

@@ -42,8 +42,10 @@ void healUnit::attack(LinkedQueue <Unit*>* needHealingList, int timeStep, Game* 
 		}
 	}
 
-	if (doneHealing)
+	if (doneHealing) {
+		this->fAtime = timeStep;
 		pGame->AddToKilled(this);
+	}
 }
 
 void healUnit::heal(Unit* unitToHeal)
