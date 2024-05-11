@@ -1,4 +1,4 @@
-#include "Game.h"
+﻿#include "Game.h"
 #include <iomanip> 
 
 Game::Game()
@@ -30,10 +30,14 @@ Game::Game()
 		AS_dead = 0;
 		AM_dead = 0;
 		AD_dead = 0;
+		SU_dead = 0;
 		A_Dd = 0;
 		A_Df = 0;
 		E_Dd = 0;
 		E_Df = 0;
+		Ay_Dd = 0;
+		Ay_Df = 0;
+
 
 
 
@@ -69,10 +73,13 @@ Game::Game(fstream& input)
 	AS_dead = 0;
 	AM_dead = 0;
 	AD_dead = 0;
+	SU_dead = 0;
 	A_Dd = 0;
 	A_Df = 0;
 	E_Dd = 0;
 	E_Df = 0;
+	Ay_Dd = 0;
+	Ay_Df = 0;
 }
 
 void Game::AddToKilled(Unit* Dead)
@@ -113,6 +120,11 @@ void Game::AddToKilled(Unit* Dead)
 		A_Dd = A_Dd + timestep - (Dead->getfatime());
 		A_Df = A_Df + (Dead->getfatime()) - (Dead->getJoinTime());
 	}
+	else if (dynamic_cast<saverUnit*>(Dead)) {
+		SU_dead++;
+		Ay_Dd = Ay_Dd + timestep - (Dead->getfatime());
+		Ay_Df = Ay_Df + (Dead->getfatime()) - (Dead->getJoinTime());
+	}
 	
 
 	Output << "| " << std::right << std::setw(5) << timestep << std::setw(5) << ""
@@ -139,6 +151,7 @@ void Game::LoadParameters(fstream& input)
 	input >> R_E_L_P >> R_E_H_P >> R_E_L_H >> R_E_H_H >> R_E_L_C >> R_E_H_C;
 	input >> R_A_L_P >> R_A_H_P >> R_A_L_H >> R_A_H_H >> R_A_L_C >> R_A_H_C;
 	input >> R_SU_L_P >> R_SU_H_P >> R_SU_L_H >> R_SU_H_H >> R_SU_L_C >> R_SU_H_C;
+	input >> infectionProb;
 	input >> infectionthreshold;
 	R_E_H_P *= -1;
 	R_E_H_H *= -1;
@@ -187,9 +200,11 @@ void Game::print()
 
 	eartharmy->printArmy();
 	alienarmy->printArmy();
+	allyarmy->printArmy();
 	std::cout << "====================== Units Fighting at current step ===================== " << endl;
 	eartharmy->printFightingUnits();
 	alienarmy->printFightingUnits();
+	allyarmy->printFightingUnits();
 	std::cout << "====================== Killed / Destructed Units ===================== " << endl;
 	std::cout << KilledList.getCount() <<" ";
 	KilledList.print();
@@ -199,11 +214,66 @@ void Game::print()
 
 }
 
-void Game::StartWar()
+bool Game::StartWar()
 {
-	eartharmy->attack(alienarmy,timestep);
-	alienarmy->attack(eartharmy,timestep);
+
+	bool F1 = eartharmy->attack(alienarmy,timestep);
+	bool F2 = alienarmy->attack(eartharmy,timestep);
 	allyarmy->attack(alienarmy,timestep);
+	if (timestep >= 40 && F1 && !F2) {
+		cout << endl;
+		cout << endl;
+		cout <<R"(
+
+			 _____           _   _       _____                     _ 
+			|  ___|         | | | |     /  ___|                   | |
+			| |__  __ _ _ __| |_| |__   \ `--.  __ ___   _____  __| |
+			|  __|/ _` | '__| __| '_ \   `--. \/ _` \ \ / / _ \/ _` |
+			| |__| (_| | |  | |_| | | | /\__/ / (_| |\ V /  __/ (_| |
+			\____/\__,_|_|   \__|_| |_| \____/ \__,_| \_/ \___|\__,_|
+                                                         
+                                                         
+			 )" << endl;
+		return false;
+	}
+	else if (timestep >= 40 && !F1 && F2) {
+		cout << endl;
+		cout << endl;
+		cout << R"(
+
+			  ___  _ _              _    _ _                                            
+			 / _ \| (_)            | |  | (_)                                           
+			/ /_\ \ |_  ___ _ __   | |  | |_ _ __  ___                                  
+			|  _  | | |/ _ \ '_ \  | |/\| | | '_ \/ __|                                 
+			| | | | | |  __/ | | | \  /\  / | | | \__ \                                 
+			\_| |_/_|_|\___|_| |_|  \/  \/|_|_| |_|___/                                 
+                                                                            
+                                                                            
+			 _____           _   _           _           _                            _ 
+			|  ___|         | | | |         | |         | |                          | |
+			| |__  __ _ _ __| |_| |__     __| | ___  ___| |_ _ __ ___  _   _  ___  __| |
+			|  __|/ _` | '__| __| '_ \   / _` |/ _ \/ __| __| '__/ _ \| | | |/ _ \/ _` |
+			| |__| (_| | |  | |_| | | | | (_| |  __/\__ \ |_| | | (_) | |_| |  __/ (_| |
+			\____/\__,_|_|   \__|_| |_|  \__,_|\___||___/\__|_|  \___/ \__, |\___|\__,_|
+																		__/ |           
+																	   |___/            
+
+                                                                                              )" << endl;
+		return false;
+	}
+	else if (timestep >= 40 && !F1 && !F2) {
+		cout << endl;
+		cout << endl;
+		cout << R"(
+			  ____                     _ _ 
+			 |  _ \ _ __ __ ___      _| | |
+			 | | | | '__/ _` \ \ /\ / / | |
+			 | |_| | | | (_| |\ V  V /|_|_|
+			 |____/|_|  \__,_| \_/\_/ (_|_)
+                                 
+			)" << endl;
+		return false;
+	}
 
 	dynamic_cast<EarthArmy*>(eartharmy)->modifyUML(timestep);
 	dynamic_cast<EarthArmy*>(eartharmy)->Heal(timestep);
@@ -212,13 +282,13 @@ void Game::StartWar()
 	if (dynamic_cast<EarthArmy*>(eartharmy)->calcinfectedperc() == 0) {
 		dynamic_cast<allyArmy*>(allyarmy)->Withdrawal();
 	}
-
+	return true;
 
 }
 
 int Game::getInfectionProb()
 {
-	return infectionthreshold;
+	return infectionProb;
 }
 
 Game::~Game()
@@ -228,7 +298,9 @@ Game::~Game()
 	Output << "====================== Final Earth Army ===================== " << endl;
 	eartharmy->Armyfile(Output,E_Df,E_Dd, ES_dead, ET_dead, EG_dead, HU_dead);
 	Output << "====================== Final Alien Army ===================== " << endl;
-	alienarmy->Armyfile(Output, E_Df, E_Dd, AS_dead, AM_dead, AD_dead);
+	alienarmy->Armyfile(Output, A_Df, A_Dd, AS_dead, AM_dead, AD_dead,0);
+	Output << "====================== Final Ally Army ===================== " << endl;
+	allyarmy->Armyfile(Output, Ay_Df, Ay_Dd, SU_dead, ET_dead, EG_dead, HU_dead);
 	Output.close();
 	if (!eartharmy)
 		delete eartharmy;

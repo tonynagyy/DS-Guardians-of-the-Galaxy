@@ -88,33 +88,33 @@ Unit* RandGenerator::GenerateUnit(string type, int r_l_p, int r_h_p, int r_l_h, 
 	int health = r_l_h + rand() % (r_h_h - r_l_h + 1);
 	int attack_capacity = r_l_c + rand() % (r_h_c - r_l_c + 1);
 
-	if (type == "HU") {
+	if (type == "HU" && E_ID <=999) {
 		Army_unit = new healUnit(E_ID++, TS, health, power, attack_capacity);
 	}
-	else if (type == "ES") {
+	else if (type == "ES" && E_ID <= 999) {
 		Army_unit = new EarthSoldier(E_ID++, TS, health, power, attack_capacity);
 	}
-	else if (type == "ET")
+	else if (type == "ET" && E_ID <= 999)
 	{
 		Army_unit = new EarthTank(E_ID++, TS, health, power, attack_capacity);
 	}
-	else if (type == "EG")
+	else if (type == "EG" && E_ID <= 999)
 	{
 		Army_unit = new EarthGunnery(E_ID++, TS, health, power, attack_capacity);
 	}
-	else if (type == "AS")
+	else if (type == "AS" && A_ID <= 2999)
 	{
 		Army_unit = new AlienSoldier(A_ID++, TS, health, power, attack_capacity);
 	}
-	else if (type == "AM")
+	else if (type == "AM" && A_ID <= 2999)
 	{
 		Army_unit = new AlienMonster(A_ID++, TS, health, power, attack_capacity);
 	}
-	else if (type == "AD")
+	else if (type == "AD" && A_ID <= 2999)
 	{
 		Army_unit = new AlienDrone(A_ID++, TS, health, power, attack_capacity);
 	}
-	else if (type == "SU") {
+	else if (type == "SU" && SU_ID <= 4999) {
 		Army_unit = new saverUnit(SU_ID++, TS, health, power, attack_capacity);
 	}
 	return Army_unit;

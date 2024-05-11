@@ -11,8 +11,8 @@ class Game
 	Army* eartharmy;
 	Army* allyarmy;
 	LinkedQueue <Unit*> KilledList;
-	int ES_dead, ET_dead, EG_dead, HU_dead , AS_dead, AM_dead, AD_dead;
-	int E_Df, E_Dd,A_Df,A_Dd;
+	int ES_dead, ET_dead, EG_dead, HU_dead , AS_dead, AM_dead, AD_dead,SU_dead;
+	int E_Df, E_Dd,A_Df,A_Dd,Ay_Dd,Ay_Df;
 	RandGenerator* pRandGen;
 	int timestep;
 	fstream* Input;
@@ -32,7 +32,7 @@ public:
 	Army* getEarthArmy();
 	Army* getAlienArmy();
 	void print();
-	void StartWar();
+	bool StartWar();
 	int getInfectionProb();
 	~Game();
 };

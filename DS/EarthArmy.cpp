@@ -11,15 +11,14 @@ EarthArmy::EarthArmy(Game* pGame) : Army(pGame) {
 	ET_attacking_list = nullptr;
 	EG_attacking_list = nullptr;
 	doneHealing = false;
-	infectedSoldiers = 0;
-	all_infectedSoldiers = 0;
 }
 
-void EarthArmy::attack(Army* enemy, int timestep)
+bool EarthArmy::attack(Army* enemy, int timestep)
 {
 	Unit* EarthUnit;
 	Unit* AlienUnit;
 	/* Pointers for printing the fighting units*/
+	bool F1= true, F2=true, F3=true;
 	ES_Attack = nullptr;
 	ET_Attack = nullptr;
 	EG_Attack = nullptr;
@@ -63,7 +62,14 @@ void EarthArmy::attack(Army* enemy, int timestep)
 			/* then we will start to attack them */
 			EarthUnit->attack(&SoldierTemp, timestep, pGame, enemy);
 			eSoldiersList.enqueue(EarthUnit);
+			while (SoldierTemp.dequeue(EarthUnit))
+			{
+				this->addUnit(EarthUnit);
+			}
 		}
+	}
+	else {
+				F1 = false;
 	}
 
 
@@ -136,6 +142,9 @@ void EarthArmy::attack(Army* enemy, int timestep)
 
 		}
 	}
+	else {
+		F2 = false;
+	}
 
 
 	/*Here Earth gunnery Will attack Alien monsters and drones Depend on its attack capacity*/
@@ -187,6 +196,10 @@ void EarthArmy::attack(Army* enemy, int timestep)
 		}
 		EarthUnit->attack(&enemytemp, timestep, pGame, enemy);
 	}
+	else {
+		F3 = false;
+	}
+	return F1 || F2 || F3;
 }
 
 void EarthArmy::InfectionSpread() {
@@ -281,7 +294,10 @@ int EarthArmy::getSoldiersCount()
 void EarthArmy::printArmy()
 {
 	std::cout << "====================== Earth Army Alive Units ====================== " << endl;
-	std::cout << eSoldiersList.getCount() << " ES "<<" Infected % : "<< calcinfectedperc() << " ";
+	if(eSoldiersList.getCount() > 0)
+	std::cout << eSoldiersList.getCount() << " ES "<<" Infected % : "<< std::setprecision(4) << calcinfectedperc() << " ";
+	else 
+	std::cout << eSoldiersList.getCount() << " ES ";
 	eSoldiersList.print();
 	std::cout << eTanksList.getCount() << " ET ";
 	eTanksList.print();
@@ -313,7 +329,11 @@ void EarthArmy::modifyUML(int timeStep)
 
 		if (temp) {
 			if (temp->getHealth() > 0 && temp->getHealth() < 0.2 * temp->getOriginalHealth()) {
+				if (temp->getInfectionStatus() == true) {
+					Unit::decrementInfectedCount();
+				}
 				soldiersUML.enqueue(temp, INT_MAX - temp->getHealth());
+				
 				temp->setUMLJoinTime(timeStep);
 			}
 
@@ -434,13 +454,14 @@ void EarthArmy::Armyfile(fstream& Output, int Df, int Dd, int ES_dead, int ET_de
 	Output << std::fixed << std::setprecision(2);
 	Output << eSoldiersList.getCount() << " ES " << "  " << eTanksList.getCount() << " ET " << "  " << eGunneryList.getCount() << " EG" << "  " << healList.getCount() << " HU" << endl;
 	Output << endl;
-	Output << (double(all_infectedSoldiers) / (eSoldiersList.getCount() + ES_dead)) * 100 << " %(Infected_ES) "
-		<< (double(ES_dead) / (eSoldiersList.getCount() + ES_dead)) * 100 << " %(Dead_ES) " << endl
-		<< (double(ET_dead) / (eTanksList.getCount() + ET_dead)) * 100 << " %(Dead_ET) " 
-		<< (double(EG_dead) / (eGunneryList.getCount() + EG_dead)) * 100 << " %(Dead_EG)" << endl
-	    << (double(HU_dead) / (healList.getCount() + HU_dead)) * 100 << " %(Dead_HU) " << endl;
+	Output <<( ((eSoldiersList.getCount() + ES_dead))? (double(Unit::getTotalInfected()) / (eSoldiersList.getCount() + ES_dead)) * 100 : 0)<< " %(Infected_ES) "
+		<<( ((eSoldiersList.getCount() + ES_dead))? (double(ES_dead) / (eSoldiersList.getCount() + ES_dead)) * 100 : 0) << " %(Dead_ES) " << endl
+		<<( ((eTanksList.getCount() + ET_dead))? (double(ET_dead) / (eTanksList.getCount() + ET_dead)) * 100 : 0 ) << " %(Dead_ET) "
+		<<( ((eGunneryList.getCount() + EG_dead))? (double(EG_dead) / (eGunneryList.getCount() + EG_dead)) * 100 : 0) << " %(Dead_EG)" << endl
+	    <<( ((healList.getCount() + HU_dead))? (double(HU_dead) / (healList.getCount() + HU_dead)) * 100 : 0) << " %(Dead_HU) " << endl;
 	Output << endl;
-	Output << (double(ES_dead + ET_dead + EG_dead) / (eSoldiersList.getCount() + eTanksList.getCount() + eGunneryList.getCount() + ES_dead + ET_dead + EG_dead)) * 100 << " %(Dead_EarthUnits)" << endl;
+	Output << (((eSoldiersList.getCount() + eTanksList.getCount() + eGunneryList.getCount() + ES_dead + ET_dead + EG_dead) != 0) ?
+		  (double(ES_dead + ET_dead + EG_dead) / (eSoldiersList.getCount() + eTanksList.getCount() + eGunneryList.getCount() + ES_dead + ET_dead + EG_dead)) * 100 : 0) << " %(Dead_EarthUnits)" << endl;
 	Output << endl;
 	int sum = ES_dead + ET_dead + EG_dead;
 	if (sum != 0) {
@@ -451,8 +472,14 @@ void EarthArmy::Armyfile(fstream& Output, int Df, int Dd, int ES_dead, int ET_de
 		Output << "average of Dd = " << Dd_avg << endl;
 		Output << "average of Db = " << Db_avg << endl;
 		Output << endl;
-		Output << "Df/Db % = " << (double(Df_avg) / Db_avg) * 100 << endl;
-		Output << "Dd/Db % = " << (double(Dd_avg) / Db_avg) * 100 << endl;
+		if (Db_avg != 0) {
+			Output << "Df/Db % = " << (double(Df_avg) / Db_avg) * 100 << endl;
+			Output << "Dd/Db % = " << (double(Dd_avg) / Db_avg) * 100 << endl;
+		}
+		else {
+			Output << "Df/Db % = 0" << endl;
+			Output << "Dd/Db % = 0" << endl;
+		}
 	}
 	else {
 		Output << "average of Df = 0 %" << endl;
@@ -464,18 +491,9 @@ void EarthArmy::Armyfile(fstream& Output, int Df, int Dd, int ES_dead, int ET_de
 	}
 }
 
-void EarthArmy::incrementinfectedcount()
-{
-	infectedSoldiers++;
-	all_infectedSoldiers++;
-}
-
-void EarthArmy::decrementinfectedcount()
-{
-	infectedSoldiers--;
-}
 
 double EarthArmy::calcinfectedperc()
 {
-	return double(infectedSoldiers* 100)/eSoldiersList.getCount() ;
+
+	return double(Unit::getInfectedCount() * 100)/eSoldiersList.getCount() ;
 }

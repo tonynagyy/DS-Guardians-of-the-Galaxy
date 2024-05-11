@@ -1,9 +1,11 @@
 #include "Unit.h"
 
+int Unit::infectedCount = 0;
+int Unit::total_infected = 0;
+
 Unit::Unit()
 {
 }
-
 Unit::Unit(int id, string type, int jointime, double health, double power, int attackcapacity)
 {
 	ID = id;
@@ -130,12 +132,35 @@ void Unit::print()
 
 void Unit::setInfectionStatus(bool val)
 {
+	if (val == true)
+	{
+		total_infected++;
+	}
+
 	infected = val;
 }
 
 bool Unit::getInfectionStatus() const
 {
 	return infected;
+}
+void Unit::decrementInfectedCount()
+{
+	infectedCount--;
+}
+void Unit::incrementInfectedCount()
+{
+	infectedCount++;
+}
+
+int Unit::getInfectedCount()
+{
+	return infectedCount;
+}
+
+int Unit::getTotalInfected()
+{
+	return total_infected;
 }
 
 void Unit::setImmunityStatus(bool val)

@@ -11,7 +11,7 @@ class allyArmy : public Army
 
 public:
     allyArmy(Game* pGame);
-    void attack(Army* enemy, int timestep);
+    bool attack(Army* enemy, int timestep);
     void Withdrawal();
     void addUnit(Unit*);
     Unit* removeUnit(string type);

@@ -24,6 +24,7 @@ using namespace std;
 int main() {
 
 	string key;
+	string mode;
 	// Open the input file
 	fstream InputFile;
 	InputFile.open("Test.txt");
@@ -33,30 +34,43 @@ int main() {
 	}
 	// Create a game object
 	Game* pGame = new Game(InputFile);
-	int i = 0;
-	while (i<50){
+	bool flag = true;
+	cout << "do you need Silent Mode? (y/n)" << endl;
+	cin >> mode;
+	system("CLS");
+	if (mode == "y") {
+		cout << "Silent Mode is on" << endl;
+		cout <<"Simulation Starts Now"<<endl;
+	}
 
+
+	while (flag){
 		if (InputFile.is_open()) {
 			srand(time(0));
 			pGame->GenerateArmy();
         }
-		cout<< "before start the next timestep"<<endl;
-		pGame->print();
-
-		// Start the war
-		pGame->StartWar();
-        cout << "after start the next timestep" << endl;
-		pGame->print();
-		cout << "Press 'q' to quit or any other key to continue: ";
-		i++;
-		cin >> key;
-
-		if (key == "q") {
-			break;
-
+		if (mode == "n") {
+			cout << "before start the next timestep" << endl;
+			pGame->print();
+			// Start the war
+			flag = pGame->StartWar();
+			cout << "after start the next timestep" << endl;
+			if(flag)
+			  pGame->print();
+			cout << "Press 'q' to quit or any other key to continue: ";
+			//cin >> key;
+			if (key == "q") {
+				break;
+			}
+			if(flag)
+			  system("CLS");
 		}
-		system("CLS");
+		else {
+			flag = pGame->StartWar();
+		}
 	}
+	if(mode == "y")
+		cout << "Simulation Ends , Output file is created" << endl;
 
 	// Deallocate memory 
 	delete pGame;

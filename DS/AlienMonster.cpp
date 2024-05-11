@@ -33,10 +33,13 @@ void AlienMonster::attack(LinkedQueue <Unit*>* SoldierTemp, int timestep, Game* 
 
 		double Damage = (Power + Health / 100) / (pow(EarthUnit->getHealth(), 0.5));
 
-		if (randNum <= infectionProb && !EarthUnit->getImmunityStatus()) {
-			EarthUnit->setInfectionStatus(true);
-			dynamic_cast<EarthArmy*>(eartharmy)->incrementinfectedcount();
-			enemy->addUnit(EarthUnit);
+		if (EarthUnit->getType() == "ES" && randNum <= infectionProb && !EarthUnit->getImmunityStatus()) {
+			if (!EarthUnit->getInfectionStatus()) {
+				EarthUnit->setInfectionStatus(true);
+				Unit::incrementInfectedCount();
+			}
+				enemy->addUnit(EarthUnit);
+			
 		}
 
 		else {
@@ -44,7 +47,8 @@ void AlienMonster::attack(LinkedQueue <Unit*>* SoldierTemp, int timestep, Game* 
 
 			if (EarthUnit->getHealth() <= 0)
 			{
-				dynamic_cast<EarthArmy*>(eartharmy)->decrementinfectedcount();
+				if(EarthUnit->getType() == "ES" && EarthUnit->getInfectionStatus())
+					Unit::decrementInfectedCount();
 				pGame->AddToKilled(EarthUnit);
 			}
 			else {

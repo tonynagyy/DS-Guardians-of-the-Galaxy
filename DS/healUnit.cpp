@@ -28,11 +28,11 @@ void healUnit::attack(LinkedQueue <Unit*>* needHealingList, int timeStep, Game* 
 			if (unitToHeal->getHealth() > 0.2 * unitToHeal->getOriginalHealth()) { // if the unit is healed
 				
 				earthArmy->addUnit(unitToHeal);
-
-				if (unitToHeal->getInfectionStatus()) {
-					unitToHeal->setInfectionStatus(false);
-					dynamic_cast<EarthArmy*>(earthArmy)->decrementinfectedcount();
-					unitToHeal->setImmunityStatus(true);
+				if (unitToHeal->getType() == "ES") {
+					if (unitToHeal->getInfectionStatus()) {
+						unitToHeal->setInfectionStatus(false);
+						unitToHeal->setImmunityStatus(true);
+					}
 				}
 
 			}
