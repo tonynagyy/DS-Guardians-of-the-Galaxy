@@ -294,9 +294,9 @@ int EarthArmy::getSoldiersCount()
 void EarthArmy::printArmy()
 {
 	std::cout << endl;
-	std::cout << "\033[9;42m============================================ \033[0m" << endl;
-	std::cout << "\033[9;42m==========\033[0m \033[1;32mEarth Army Alive Units\033[0m \033[9;42m========== \033[0m" << endl;
-	std::cout << "\033[9;42m============================================ \033[0m" << endl;
+	std::cout << "\033[6;42m============================================ \033[0m" << endl;
+	std::cout << "\033[6;42m==========\033[0m \033[1;32mEarth Army Alive Units\033[0m \033[6;42m========== \033[0m" << endl;
+	std::cout << "\033[6;42m============================================ \033[0m" << endl;
 	std::cout << endl;
 	std::cout << "\033[1;32m";
 	if(eSoldiersList.getCount() > 0)
@@ -313,9 +313,9 @@ void EarthArmy::printArmy()
 	std::cout << endl;
 	std::cout << "\033[0m";
 	std::cout << endl;
-	std::cout << "\033[9;41m================================== \033[0m" << endl;
-	std::cout << "\033[9;41m=====\033[0m \033[1;31mUnit Maintenance Lists\033[0m \033[9;41m===== \033[0m" << endl;
-	std::cout << "\033[9;41m================================== \033[0m" << endl;
+	std::cout << "\033[6;41m================================== \033[0m" << endl;
+	std::cout << "\033[6;41m=====\033[0m \033[1;31mUnit Maintenance Lists\033[0m \033[6;41m===== \033[0m" << endl;
+	std::cout << "\033[6;41m================================== \033[0m" << endl;
 	std::cout << endl;
 	std::cout << "\033[1;31m";
 	std::cout << soldiersUML.getCount() << " ES ";
@@ -378,43 +378,47 @@ void EarthArmy::modifyUML(int timeStep)
 
 void EarthArmy::Heal(int timeStep)
 {
-	Unit* EarthUnit;
+	Unit* healingUnit;
+
+	HU_Healing = nullptr;
+	HU_healing_list = new LinkedQueue<Unit*>;
 
 	/*Here Earth healUnit Will heal Earth Soldiers and tanks Depend on its attack capacity*/
 	if (!healList.isEmpty()) {
-		healList.pop(EarthUnit);
+
+		healList.peek(healingUnit);
+		HU_Healing = healingUnit; // for printing
 		Unit* unitToHeal;
 		double tempHealth;
-		int healCapacity = EarthUnit->getAttackCapacity();
+		int healCapacity = healingUnit->getAttackCapacity();
 		LinkedQueue<Unit*> needHealingList;
 
-
-		if (EarthUnit) {
-
-			doneHealing = false;
+		if (healingUnit) {
 
 			for (int i = 0; i < healCapacity; i++) {
 
 				if (!soldiersUML.isEmpty()) {
 					soldiersUML.dequeue(unitToHeal, tempHealth);
 					needHealingList.enqueue(unitToHeal);
+					HU_healing_list->enqueue(unitToHeal);
 				}
 
 				else if (!tankUML.isEmpty()) {
 					tankUML.dequeue(unitToHeal);
 					needHealingList.enqueue(unitToHeal);
+					HU_healing_list->enqueue(unitToHeal);
 				}
 
 				else {
-					healList.push(EarthUnit);
+					//healList.push(healingUnit);
 					break;
 				}
 
 			}
 
-			EarthUnit->attack(&needHealingList, timeStep, pGame, this);
+			healingUnit->attack(&needHealingList, timeStep, pGame, this);
 
-			LinkedQueue<Unit*>* tempList = dynamic_cast<healUnit*>(EarthUnit)->getTempList();
+			LinkedQueue<Unit*>* tempList = dynamic_cast<healUnit*>(healingUnit)->getTempList();
 			
 			for (int i = 0; i < tempList->getCount(); i++) {
 
@@ -431,32 +435,42 @@ void EarthArmy::Heal(int timeStep)
 			}
 		}
 
+		healingUnit = nullptr;
 	}
 }
 
 void EarthArmy::printFightingUnits()
 {
 	if (ES_Attack && ES_attacking_list && !ES_attacking_list->isEmpty()) {
-		std::cout << "ES " << ES_Attack->getID() << " Shots ";
+		std::cout << "ES " << ES_Attack->getID() << " shoots ";
 		ES_attacking_list->print();
 	}
 
 	if (ET_Attack && ET_attacking_list && !ET_attacking_list->isEmpty()) {
-		std::cout << "ET " << ET_Attack->getID() << " Shots ";
+		std::cout << "ET " << ET_Attack->getID() << " shoots ";
 		ET_attacking_list->print();
 	}
 
 	if (EG_Attack &&  EG_attacking_list && !EG_attacking_list->isEmpty()) {
-		std::cout << "EG " << EG_Attack->getID() << " Shots ";
+		std::cout << "EG " << EG_Attack->getID() << " shoots ";
 		EG_attacking_list->print();
+	}
+
+	if (HU_Healing && HU_healing_list && !HU_healing_list->isEmpty()) {
+		std::cout << "\033[6;31m";
+		std::cout << "HU " << HU_Healing->getID() << " Healing ";
+		HU_healing_list->print();
+		std::cout << "\033[0m";
 	}
 
 	delete ES_attacking_list;
 	delete ET_attacking_list;
 	delete EG_attacking_list;
+	delete HU_healing_list;
 	ES_attacking_list = nullptr;
 	ET_attacking_list = nullptr;
 	EG_attacking_list = nullptr;
+	HU_healing_list = nullptr;
 
 
 }

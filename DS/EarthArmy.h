@@ -13,8 +13,8 @@ class EarthArmy : public Army
 	LinkedQueue<Unit*> tankUML;
 	priQueue<Unit*> soldiersUML;
 	Unit* EarthUnit;
-	Unit* ES_Attack, * ET_Attack, * EG_Attack;
-	LinkedQueue<Unit*>* ES_attacking_list, * ET_attacking_list, * EG_attacking_list;
+	Unit* ES_Attack, * ET_Attack, * EG_Attack, * HU_Healing;
+	LinkedQueue<Unit*>* ES_attacking_list, * ET_attacking_list, * EG_attacking_list, * HU_healing_list;
 	bool doneHealing;
 public:
 	EarthArmy(Game* pGame);

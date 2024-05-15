@@ -9,7 +9,7 @@ Game::Game()
 	allyarmy = NULL;
 	Input = NULL;
 	pRandGen = new RandGenerator(nullptr,nullptr,nullptr);
-	Output.open("output.txt", ios::out);
+	Output.open("outputs/output.txt", ios::out);
         if (!Output.is_open()) {
 		  std::cerr << "Failed to open output.txt for writing.\n";
 		} else {
@@ -44,7 +44,7 @@ Game::Game()
 
 }
 
-Game::Game(fstream& input)
+Game::Game(fstream& input, string outFileName)
 {
 	timestep = 0;
 	eartharmy = new EarthArmy(this);
@@ -52,8 +52,10 @@ Game::Game(fstream& input)
 	allyarmy = new allyArmy(this);
 	pRandGen = new RandGenerator(eartharmy,alienarmy,allyarmy);
 
+	outFileName = "outputs/" + outFileName + "OutputFile.txt";
+
 	Input = &input;
-	Output.open("output.txt", ios::out);
+	Output.open(outFileName, ios::out);
 	if (!Output.is_open()) {
 		std::cerr << "Failed to open output.txt for writing.\n";
 	}
@@ -82,6 +84,9 @@ Game::Game(fstream& input)
 	Ay_Dd = 0;
 	Ay_Df = 0;
 	SU_help = false;
+
+	LoadParameters(input);
+
 }
 
 void Game::AddToKilled(Unit* Dead)
@@ -177,7 +182,6 @@ void Game::LoadParameters(fstream& input)
 void Game::GenerateArmy()
 {
 	timestep++;
-	LoadParameters(*Input);
 	pRandGen->GenerateArmy("Earth",timestep);
 	pRandGen->GenerateArmy("Alien", timestep);
 
@@ -206,23 +210,23 @@ void Game::print()
 	allyarmy->printArmy();	
 
 	std::cout << endl;
-	std::cout << "\033[46m============================================ \033[0m" << endl;
-	std::cout << "\033[46m======\033[0m \033[36mUnits Fighting at current step\033[0m \033[46m====== \033[0m" << endl;
-	std::cout << "\033[46m============================================ \033[0m" << endl;
+	std::cout << "\033[6;46m============================================ \033[0m" << endl;
+	std::cout << "\033[6;46m======\033[0m \033[36mUnits Fighting at current step\033[0m \033[6;46m====== \033[0m" << endl;
+	std::cout << "\033[6;46m============================================ \033[0m" << endl;
 	std::cout << endl;
 	std::cout << "\033[1;32m";
 	eartharmy->printFightingUnits();
 	std::cout << "\033[0m";
-	std::cout << "\033[1;35m";
+	std::cout << "\033[1;34m";
 	alienarmy->printFightingUnits();
 	std::cout << "\033[0m";
 	std::cout << "\033[38;2;255;165;0m";
 	allyarmy->printFightingUnits();
 	std::cout << "\033[0m";
 	std::cout << endl;
-	std::cout << "\033[48;2;169;169;169m=============================================== \033[0m" << endl;
-	std::cout << "\033[48;2;169;169;169m==========\033[0m \033[38;2;169;169;169mKilled / Destructed Units\033[0m \033[48;2;169;169;169m========== \033[0m" << endl;
-	std::cout << "\033[48;2;169;169;169m=============================================== \033[0m" << endl;
+	std::cout << "\033[6;48;2;169;169;169m=============================================== \033[0m" << endl;
+	std::cout << "\033[6;48;2;169;169;169m==========\033[0m \033[38;2;169;169;169mKilled / Destructed Units\033[0m \033[6;48;2;169;169;169m========== \033[0m" << endl;
+	std::cout << "\033[6;48;2;169;169;169m=============================================== \033[0m" << endl;
 	std::cout << endl;
 	std::cout << "\033[38;2;169;169;169m";
 	std::cout << KilledList.getCount() <<" ";
@@ -236,8 +240,13 @@ void Game::print()
 bool Game::StartWar()
 {
 
+
 	bool F1 = eartharmy->attack(alienarmy,timestep);
 	bool F2 = alienarmy->attack(eartharmy,timestep);
+	if (dynamic_cast<EarthArmy*>(eartharmy)->calcinfectedperc() == 0) {
+		dynamic_cast<allyArmy*>(allyarmy)->Withdrawal();
+		SU_help = false;
+	}
 	allyarmy->attack(alienarmy,timestep);
 	if (timestep >= 40 && F1 && !F2) {
 		cout << endl;
@@ -260,7 +269,7 @@ bool Game::StartWar()
 	else if (timestep >= 40 && !F1 && F2) {
 		cout << endl;
 		cout << endl;
-		cout << "\033[1;35m";
+		cout << "\033[1;34m";
 		cout << R"(
 
 			  ___  _ _              _    _ _                                            
@@ -277,8 +286,8 @@ bool Game::StartWar()
 			|  __|/ _` | '__| __| '_ \   / _` |/ _ \/ __| __| '__/ _ \| | | |/ _ \/ _` |
 			| |__| (_| | |  | |_| | | | | (_| |  __/\__ \ |_| | | (_) | |_| |  __/ (_| |
 			\____/\__,_|_|   \__|_| |_|  \__,_|\___||___/\__|_|  \___/ \__, |\___|\__,_|
-																		__/ |           
-																	   |___/            
+										   __/  |           
+										   |___/            
 
                                                                                               
 
@@ -301,10 +310,6 @@ bool Game::StartWar()
 			)" << endl;
 		cout << "\033[0m";
 		return false;
-	}
-	if (dynamic_cast<EarthArmy*>(eartharmy)->calcinfectedperc() == 0) {
-		dynamic_cast<allyArmy*>(allyarmy)->Withdrawal();
-		SU_help = false;
 	}
 	dynamic_cast<EarthArmy*>(eartharmy)->modifyUML(timestep);
 	dynamic_cast<EarthArmy*>(eartharmy)->Heal(timestep);

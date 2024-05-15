@@ -26,7 +26,7 @@ class Game
 
 public:
 	Game();
-	Game(fstream& input);
+	Game(fstream& input, string outFileName);
 	void AddToKilled(Unit * Dead);
 	void LoadParameters(fstream& input);
 	void GenerateArmy();

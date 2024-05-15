@@ -94,7 +94,7 @@ void allyArmy::printArmy()
 void allyArmy::printFightingUnits()
 {
 	if (SU_attack && SU_attacking_list && !SU_attacking_list->isEmpty()) {
-		std::cout << "SU " << SU_attack->getID() << " Shots ";
+		std::cout << "SU " << SU_attack->getID() << " shoots ";
 		SU_attacking_list->print();
 	}
 	delete SU_attacking_list;

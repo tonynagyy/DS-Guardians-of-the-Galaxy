@@ -249,10 +249,10 @@ int AlienArmy::getSoldiersCount()
 void AlienArmy::printArmy()
 {
 	std::cout << endl;
-	std::cout << "\033[9;45m============================================ \033[0m" << endl;
-	std::cout << "\033[9;45m==========\033[0m \033[1;35mAlien Army Alive Units\033[0m \033[9;45m========== \033[0m" << endl;
-	std::cout << "\033[9;45m============================================ \033[0m" << endl;
-	std::cout << "\033[1;35m";
+	std::cout << "\033[6;44m============================================ \033[0m" << endl;
+	std::cout << "\033[6;44m==========\033[0m \033[1;34mAlien Army Alive Units\033[0m \033[6;44m========== \033[0m" << endl;
+	std::cout << "\033[6;44m============================================ \033[0m" << endl;
+	std::cout << "\033[1;34m";
 	std::cout << endl;	std::cout << aSoldiersList.getCount() << " AS ";
 	aSoldiersList.print();
 	std::cout << aMonstersList.getCount() << " AM ";
@@ -269,21 +269,21 @@ void AlienArmy::printArmy()
 void AlienArmy::printFightingUnits()
 {
 	if (AS_Attack && AS_attacking_list && !AS_attacking_list->isEmpty()) {
-		std::cout << "AS " << AS_Attack->getID() << " Shots ";
+		std::cout << "AS " << AS_Attack->getID() << " shoots ";
 		AS_attacking_list->print();
 	}
 
 	if (AM_Attack && AM_attacking_list && !AM_attacking_list->isEmpty()) {
-		std::cout << "AM " << AM_Attack->getID() << " Shots ";
+		std::cout << "AM " << AM_Attack->getID() << " shoots ";
 		AM_attacking_list->print();
 	}
 
 	if (AD_Attack && AD_attacking_list && !AD_attacking_list->isEmpty()) {
-		std::cout << "AD " << AD_Attack->getID() << " Shots ";
+		std::cout << "AD " << AD_Attack->getID() << " shoots ";
 		AD_attacking_list->print();
 	}
 	if (AD2_Attack && AD2_attacking_list && !AD2_attacking_list->isEmpty()) {
-		std::cout << "AD " << AD2_Attack->getID() << " Shots ";
+		std::cout << "AD " << AD2_Attack->getID() << " shoots ";
 		AD2_attacking_list->print();
 	}
 
