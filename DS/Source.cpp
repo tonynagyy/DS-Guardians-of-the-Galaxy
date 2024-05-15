@@ -48,7 +48,7 @@ int main() {
 
 	while (flag){
 		if (InputFile.is_open()) {
-			srand(time(0));
+			//srand(time(0));
 			pGame->GenerateArmy();
         }
 		if (mode == "n") {
@@ -61,12 +61,12 @@ int main() {
 			  pGame->print();
 			cout << "Press 'q' to quit or any other key to continue: ";
 			
-			//cin >> key;
+			cin >> key;
 			if (key == "q") {
 				break;
 			}
-			if(flag)
-			  system("CLS");
+			/*if(flag)
+			 system("CLS");*/
 		}
 		else {
 			flag = pGame->StartWar();

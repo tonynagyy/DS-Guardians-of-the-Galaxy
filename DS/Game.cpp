@@ -238,11 +238,6 @@ bool Game::StartWar()
 
 	bool F1 = eartharmy->attack(alienarmy,timestep);
 	bool F2 = alienarmy->attack(eartharmy,timestep);
-
-	if (dynamic_cast<EarthArmy*>(eartharmy)->calcinfectedperc() == 0) {
-		dynamic_cast<allyArmy*>(allyarmy)->Withdrawal();
-		SU_help = false;
-	}
 	allyarmy->attack(alienarmy,timestep);
 	if (timestep >= 40 && F1 && !F2) {
 		cout << endl;
@@ -307,7 +302,10 @@ bool Game::StartWar()
 		cout << "\033[0m";
 		return false;
 	}
-
+	if (dynamic_cast<EarthArmy*>(eartharmy)->calcinfectedperc() == 0) {
+		dynamic_cast<allyArmy*>(allyarmy)->Withdrawal();
+		SU_help = false;
+	}
 	dynamic_cast<EarthArmy*>(eartharmy)->modifyUML(timestep);
 	dynamic_cast<EarthArmy*>(eartharmy)->Heal(timestep);
 	dynamic_cast<EarthArmy*>(eartharmy)->InfectionSpread();
