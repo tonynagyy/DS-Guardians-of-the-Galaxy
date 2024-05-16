@@ -2,10 +2,6 @@
 #include "random"
 
 
-int RandGenerator::E_ID = 0;
-int RandGenerator::A_ID = 2000;
-int RandGenerator::SU_ID = 4000;
-
 RandGenerator::RandGenerator(Army* Earth , Army* Alien, Army* Ally)
 {
 	
@@ -13,6 +9,10 @@ RandGenerator::RandGenerator(Army* Earth , Army* Alien, Army* Ally)
 	alienarmy = Alien;
 	allyarmy = Ally;
 	
+	E_ID = 0;
+	A_ID = 2000;
+	SU_ID = 4000;
+
 
 }
 
@@ -120,7 +120,7 @@ Unit* RandGenerator::GenerateUnit(string type, int r_l_p, int r_h_p, int r_l_h, 
 	{
 		Army_unit = new AlienDrone(A_ID++, TS, health, power, attack_capacity);
 	}
-	else if (type == "SU" && SU_ID <= 4999) {
+	else if (type == "SU" && SU_ID <= 4250) {
 		Army_unit = new saverUnit(SU_ID++, TS, health, power, attack_capacity);
 	}
 	return Army_unit;
@@ -156,4 +156,8 @@ void RandGenerator::setProb(int p)
 
 RandGenerator::~RandGenerator()
 {
+	E_ID = 0;
+	A_ID = 2000;
+	SU_ID = 4000;
+
 }

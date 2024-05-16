@@ -16,9 +16,9 @@
 
 class RandGenerator
 {
-	static int E_ID;
-	static int A_ID;
-	static int SU_ID;
+	int E_ID;
+	int A_ID;
+	int SU_ID;
 	int TS; //current timestep
 	int N;  
 	int prob;

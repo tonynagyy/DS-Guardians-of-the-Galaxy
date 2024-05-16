@@ -26,32 +26,34 @@ using namespace std;
 
 int main() {
 
-	string key;
-	string mode;
-	string restart="y";
-	string fileName;
-	// Open the input file
-	fstream InputFile;
-	cout << "Please enter the name of the input file: ";
+	string restart = "y";
+	while (restart == "y") {
+		
+		string key;
+		string mode;
+		string fileName;
+		// Open the input file
+		fstream InputFile;
+		cout << "Please enter the name of the input file: ";
 
-	cin >> fileName;
+		cin >> fileName;
 
-	string temp = "inputs/" + fileName + ".txt";
+		string temp = "inputs/" + fileName + ".txt";
 
-	InputFile.open(temp);
+		InputFile.open(temp);
 
-	if (!InputFile.is_open()) {
-		cerr << "Error: Could not open file " << fileName  << endl;
-		return 1; // Exit program on error
-	}
-	// Create a game object
-	Game* pGame = new Game(InputFile, fileName);
-	bool flag = true;
+		if (!InputFile.is_open()) {
+			cerr << "Error: Could not open file " << fileName << endl;
+			return 1; // Exit program on error
+		}
+		// Create a game object
+		Game* pGame = new Game(InputFile, fileName);
+		bool flag = true;
 
-	cout << endl;
-	cout << endl;
-	cout << "\033[1;38;5;12m";
-	cout << R"(
+		cout << endl;
+		cout << endl;
+		cout << "\033[1;38;5;12m";
+		cout << R"(
 				____                     _ _                 
 				/ ___|_   _  __ _ _ __ __| (_) __ _ _ __  ___ 
 				| |  _| | | |/ _` | '__/ _` | |/ _` | '_ \/ __|
@@ -69,58 +71,61 @@ int main() {
 									/____/   
 
 			)" << endl;
-	cout << "\033[0m";
+		cout << "\033[0m";
 
-	Sleep(2000);
-		
-	cout << "\033[1;44mdo you need Silent Mode? (y/n)\033[0m" << endl;
-	cin >> mode;
+		Sleep(2000);
 
-	system("CLS");
-	if (mode == "y") {
-		cout << "Silent Mode is on" << endl;
-		cout <<"Simulation Starts Now"<<endl;
-	}
+		cout << "\033[1;44mdo you need Silent Mode? (y/n)\033[0m" << endl;
+		cin >> mode;
 
-
-	while (flag){
-		if (InputFile.is_open()) {
-			//srand(time(0));
-			pGame->GenerateArmy();
+		system("CLS");
+		if (mode == "y") {
+			cout << "Silent Mode is on" << endl;
+			cout << "Simulation Starts Now" << endl;
 		}
-		if (mode == "n") {
-			cout << "before start the next timestep" << endl;
-			pGame->print();
-			// Start the war
-			flag = pGame->StartWar();
-			cout << "after start the next timestep" << endl;
-			if(flag)
-			pGame->print();
-			cout << "Press 'q' to quit or any other key to continue: ";
-				
-			cin >> key;
-			if (key == "q") {
-				break;
+
+
+		while (flag) {
+			if (InputFile.is_open()) {
+				//srand(time(0));
+				pGame->GenerateArmy();
 			}
-			/*if(flag)
-			system("CLS");*/
+			if (mode == "n") {
+				cout << "before start the next timestep" << endl;
+				pGame->print();
+				// Start the war
+				flag = pGame->StartWar();
+				cout << "after start the next timestep" << endl;
+				if (flag)
+					pGame->print();
+				cout << "Press 'q' to quit or any other key to continue: ";
+
+				//cin >> key;
+				if (key == "q") {
+					break;
+				}
+				/*if(flag)
+				system("CLS");*/
+			}
+			else {
+				flag = pGame->StartWar();
+			}
 		}
-		else {
-			flag = pGame->StartWar();
-		}
+		if (mode == "y")
+			cout << "Simulation Ends , Output file is created" << endl;
+
+		InputFile.close();// Close the input file
+		
+		delete pGame;
+
+		cout << "\n\n";
+		cout << "Do you want to play again? (y/n)" << endl;
+		
+		cin >> restart;
+		// Deallocate memory 
+		
+
+		system("CLS");
 	}
-	if(mode == "y")
-		cout << "Simulation Ends , Output file is created" << endl;
-
-	InputFile.close();// Close the input file
-
-	cout <<"\n\n";
-	cout << "Do you want to play again? (y/n)" << endl;
-	cout <<"\n\n";
-	cin >> restart;
-// Deallocate memory 
-	delete pGame;
-
-	
 
 }
