@@ -19,16 +19,12 @@ RandGenerator::RandGenerator(Army* Earth , Army* Alien, Army* Ally)
 void RandGenerator::GenerateArmy(string armytype,int ts)
 {
 	TS = ts;
-
-	random_device rd;  
-	mt19937 generator(rd()); 
-	uniform_int_distribution<int> A_B(1, 100);
 	if (armytype == "Earth") {
 		Unit* Earth_unit;
 		for (int i = 0; i < N; i++) {
-			int A = A_B(generator);
+			int A = generateRandNum(1, 100);
 			if (A <= prob) {
-				int B = A_B(generator);
+				int B = generateRandNum(1, 100);
 				if (B <= percentage[0]) {
 					Earth_unit = GenerateUnit("HU", ranges[0], ranges[1], ranges[2], ranges[3], ranges[4], ranges[5]);
 					eartharmy->addUnit(Earth_unit);
@@ -52,9 +48,9 @@ void RandGenerator::GenerateArmy(string armytype,int ts)
 	else if (armytype == "Alien") {
 		Unit* Alien_unit;
 		for (int i = 0; i < N; i++) {
-			int A = A_B(generator);
+			int A = generateRandNum(1, 100);
 			if (A <= prob) {
-				int B = A_B(generator);
+				int B = generateRandNum(1, 100);
 				if (B <= percentage[4]) {
 					Alien_unit = GenerateUnit("AS", ranges[6], ranges[7], ranges[8], ranges[9], ranges[10], ranges[11]);
 					alienarmy->addUnit(Alien_unit);
@@ -74,7 +70,7 @@ void RandGenerator::GenerateArmy(string armytype,int ts)
 	else if (armytype == "Ally") {
 		Unit* Ally_unit;
 		for (int i = 0; i < N; i++) {
-			int A = A_B(generator);
+			int A = generateRandNum(1, 100);
 			if (A <= prob) {
 				Ally_unit = GenerateUnit("SU", ranges[12], ranges[13], ranges[14], ranges[15], ranges[16], ranges[17]);
 				allyarmy->addUnit(Ally_unit);
@@ -85,15 +81,11 @@ void RandGenerator::GenerateArmy(string armytype,int ts)
 
 Unit* RandGenerator::GenerateUnit(string type, int r_l_p, int r_h_p, int r_l_h, int r_h_h, int r_l_c, int r_h_c)
 {
-	random_device rd;
-	mt19937 generator(rd());
 	Unit* Army_unit=nullptr;
-	uniform_int_distribution<int> powerRanges(r_l_p, r_h_p);
-	int power = powerRanges(generator);
-	uniform_int_distribution<int> healthRanges(r_l_h, r_h_h);
-	int health = healthRanges(generator);
-	uniform_int_distribution<int> capacityRanges(r_l_c, r_h_c);
-	int attack_capacity = capacityRanges(generator);
+	int power = generateRandNum(r_l_p, r_h_p);
+	int health = generateRandNum(r_l_h, r_h_h);
+	int attack_capacity = generateRandNum(r_l_c, r_h_c);
+	
 	if (type == "HU" && E_ID <=999) {
 		Army_unit = new healUnit(E_ID++, TS, health, power, attack_capacity);
 	}
@@ -154,10 +146,24 @@ void RandGenerator::setProb(int p)
 	prob = p;
 }
 
+int RandGenerator::generateRandNum(int lower, int upper){
+	
+	std::random_device rd; 
+	
+	std::mt19937 generator(rd()); 
+
+	std::uniform_int_distribution<int> rand(lower, upper);
+	
+	return rand(generator);
+	
+	
+}
+
 RandGenerator::~RandGenerator()
 {
 	E_ID = 0;
 	A_ID = 2000;
 	SU_ID = 4000;
+
 
 }

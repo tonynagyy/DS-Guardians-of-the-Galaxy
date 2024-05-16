@@ -16,6 +16,67 @@ AlienArmy::AlienArmy(Game* pGame) : Army(pGame)
 	AD2_attacking_list = nullptr;
 }
 
+
+
+
+void AlienArmy::addUnit(Unit* AlienUnit)
+{
+	if (dynamic_cast<AlienSoldier*>(AlienUnit)) {
+		aSoldiersList.enqueue(AlienUnit);
+	}
+	else if (dynamic_cast<AlienMonster*>(AlienUnit)) {
+		aMonstersList.AddElement(AlienUnit);
+	}
+	else if (dynamic_cast<AlienDrone*>(AlienUnit)) {
+		aDronesList.enqueue(AlienUnit);
+	}
+}
+
+Unit* AlienArmy::removeUnit(string type)
+{
+	if (type == "AS") {
+		if (!aSoldiersList.dequeue(AlienUnit)) {
+			AlienUnit = nullptr;
+		}
+	}
+	else if (type == "AM") {
+
+		if (aMonstersList.getCount() != 0) {
+			if (!aMonstersList.Remove(AlienUnit)) {
+				AlienUnit = nullptr;
+			}
+		}
+
+		else return nullptr;
+
+	}
+
+	else if (type == "AD") {
+
+		bool res;
+
+		if (flag) {
+			res = aDronesList.dequeue(AlienUnit);
+		}
+		else {
+			res = aDronesList.RearDequeue(AlienUnit);
+		}
+
+		if (!res) {
+			AlienUnit = nullptr;
+		}
+		else {
+			flag = !flag;
+		}
+	}
+	return AlienUnit;
+}
+
+
+
+
+
+
 bool AlienArmy::attack(Army* enemy, int timestep)
 {
 	Unit* EarthUnit;
@@ -189,58 +250,6 @@ bool AlienArmy::attack(Army* enemy, int timestep)
 	return F1 || F2 || F3;
 }
 
-void AlienArmy::addUnit(Unit* AlienUnit)
-{
-	if (dynamic_cast<AlienSoldier*>(AlienUnit)) {
-		aSoldiersList.enqueue(AlienUnit);
-	}
-	else if (dynamic_cast<AlienMonster*>(AlienUnit)) {
-		aMonstersList.AddElement(AlienUnit);
-	}
-	else if (dynamic_cast<AlienDrone*>(AlienUnit)) {
-		aDronesList.enqueue(AlienUnit);
-	}
-}
-
-Unit* AlienArmy::removeUnit(string type)
-{
-	if (type == "AS") {
-		if (!aSoldiersList.dequeue(AlienUnit)) {
-			AlienUnit = nullptr;
-		}
-	}
-	else if (type == "AM") {
-
-		if (aMonstersList.getCount() != 0) {
-			if (!aMonstersList.Remove(AlienUnit)) {
-				AlienUnit = nullptr;
-			}
-		}
-
-		else return nullptr;
-
-	}
-
-	else if (type == "AD") {
-
-		bool res;
-
-		if (flag) {
-			res = aDronesList.dequeue(AlienUnit);
-		}
-		else {
-			res = aDronesList.RearDequeue(AlienUnit);
-		}
-
-		if (!res) {
-			AlienUnit = nullptr;
-		}
-		else {
-			flag = !flag;
-		}
-	}
-	return AlienUnit;
-}
 int AlienArmy::getSoldiersCount()
 {
 	return aSoldiersList.getCount();
@@ -302,7 +311,9 @@ void AlienArmy::printFightingUnits()
 void AlienArmy::Armyfile(fstream& Output, int Df, int Dd, int AS_dead, int AM_dead, int AD_dead, int X_dead)
 {
 	Output << std::fixed << std::setprecision(2);
-	Output << aSoldiersList.getCount() << " AS " << "  " << aMonstersList.getCount() << " AM " << "  " << aDronesList.getCount() << " AD" << endl;
+	Output << aSoldiersList.getCount() << " AS " << "  " 
+		   << aMonstersList.getCount() << " AM " << "  " 
+		   << aDronesList.getCount() << " AD" << endl;
 	Output << endl;
 	Output <<( ((aSoldiersList.getCount() + AS_dead)!=0)? (double(AS_dead) / (aSoldiersList.getCount() + AS_dead)) * 100 : 0)<< " %(Dead_AS) "
 		   <<( ((aMonstersList.getCount() + AM_dead)!=0)? (double(AM_dead) / (aMonstersList.getCount() + AM_dead)) * 100 : 0)<< " %(Dead_AM) "
@@ -343,5 +354,22 @@ void AlienArmy::Armyfile(fstream& Output, int Df, int Dd, int AS_dead, int AM_de
 
 
 
+}
+
+AlienArmy::~AlienArmy()
+{
+	Unit* AlienUnit;
+	while (aSoldiersList.dequeue(AlienUnit)) {
+		delete AlienUnit;
+		AlienUnit = nullptr;
+	}
+	while (aMonstersList.Remove(AlienUnit)) {
+		delete AlienUnit;
+		AlienUnit = nullptr;
+	}
+	while (aDronesList.dequeue(AlienUnit)) {
+		delete AlienUnit;
+		AlienUnit = nullptr;
+	}
 }
 

@@ -13,6 +13,54 @@ EarthArmy::EarthArmy(Game* pGame) : Army(pGame) {
 	doneHealing = false;
 }
 
+
+
+void EarthArmy::addUnit(Unit* EarthUnit)
+{
+	if (dynamic_cast<EarthSoldier*>(EarthUnit)) {
+		eSoldiersList.enqueue(EarthUnit);
+	}
+	else if (dynamic_cast<EarthTank*>(EarthUnit)) {
+		eTanksList.push(EarthUnit);
+	}
+	else if (dynamic_cast<EarthGunnery*>(EarthUnit)) {
+		eGunneryList.enqueue(EarthUnit, EarthUnit->getPriority());  // pls check the priority function
+	}
+	else if (dynamic_cast<healUnit*>(EarthUnit)) {
+		healList.push(EarthUnit);
+	}
+}
+
+Unit* EarthArmy::removeUnit(string type)
+{
+
+	if (type == "ES") {
+		if (!eSoldiersList.dequeue(EarthUnit)) {
+			EarthUnit = nullptr;
+		}
+	}
+	else if (type == "ET") {
+		if (!eTanksList.pop(EarthUnit)) {
+			EarthUnit = nullptr;
+		}
+
+	}
+	else if (type == "EG") {
+		double  pri;
+		if (!eGunneryList.dequeue(EarthUnit, pri)) {
+			EarthUnit = nullptr;
+		}
+
+	}
+	else if (type == "HU") {
+		if (!healList.pop(EarthUnit)) {
+			EarthUnit = nullptr;
+		}
+	}
+	return EarthUnit;
+
+}
+
 bool EarthArmy::attack(Army* enemy, int timestep)
 {
 	Unit* EarthUnit;
@@ -240,93 +288,10 @@ void EarthArmy::InfectionSpread() {
 }
 
 
-void EarthArmy::addUnit(Unit* EarthUnit)
-{
-	if (dynamic_cast<EarthSoldier*>(EarthUnit)) {
-		eSoldiersList.enqueue(EarthUnit);
-	}
-	else if (dynamic_cast<EarthTank*>(EarthUnit)) {
-		eTanksList.push(EarthUnit);
-	}
-	else if (dynamic_cast<EarthGunnery*>(EarthUnit)) {
-		eGunneryList.enqueue(EarthUnit, EarthUnit->getPriority());  // pls check the priority function
-	}
-	else if (dynamic_cast<healUnit*>(EarthUnit)) {
-		healList.push(EarthUnit);
-	}
-}
-
-Unit* EarthArmy::removeUnit(string type)
-{
-
-	if (type == "ES") {
-		if (!eSoldiersList.dequeue(EarthUnit)) {
-			EarthUnit = nullptr;
-		}
-	}
-	else if (type == "ET") {
-		if (!eTanksList.pop(EarthUnit)) {
-			EarthUnit = nullptr;
-		}
-
-	}
-	else if (type == "EG") {
-		double  pri;
-		if (!eGunneryList.dequeue(EarthUnit, pri)) {
-			EarthUnit = nullptr;
-		}
-
-	}
-	else if (type == "HU") {
-		if (!healList.pop(EarthUnit)) {
-			EarthUnit = nullptr;
-		}
-	}
-	return EarthUnit;
-
-}
 
 int EarthArmy::getSoldiersCount()
 {
 	return eSoldiersList.getCount();
-}
-
-void EarthArmy::printArmy()
-{
-	std::cout << endl;
-	std::cout << "\033[6;42m============================================ \033[0m" << endl;
-	std::cout << "\033[6;42m==========\033[0m \033[1;32mEarth Army Alive Units\033[0m \033[6;42m========== \033[0m" << endl;
-	std::cout << "\033[6;42m============================================ \033[0m" << endl;
-	std::cout << endl;
-	std::cout << "\033[1;32m";
-	if(eSoldiersList.getCount() > 0)
-	std::cout << eSoldiersList.getCount() << " ES "<<" Infected % : "<< std::setprecision(4) << calcinfectedperc() << " ";
-	else 
-	std::cout << eSoldiersList.getCount() << " ES ";
-	eSoldiersList.print();
-	std::cout << eTanksList.getCount() << " ET ";
-	eTanksList.print();
-	std::cout << eGunneryList.getCount() << " EG ";
-	eGunneryList.print();
-	std::cout << healList.getCount() << " HU ";
-	healList.print();
-	std::cout << endl;
-	std::cout << "\033[0m";
-	std::cout << endl;
-	std::cout << "\033[6;41m================================== \033[0m" << endl;
-	std::cout << "\033[6;41m=====\033[0m \033[1;31mUnit Maintenance Lists\033[0m \033[6;41m===== \033[0m" << endl;
-	std::cout << "\033[6;41m================================== \033[0m" << endl;
-	std::cout << endl;
-	std::cout << "\033[1;31m";
-	std::cout << soldiersUML.getCount() << " ES ";
-	soldiersUML.print();
-	std::cout << tankUML.getCount() << " ET ";
-	tankUML.print();
-	std::cout << endl;
-	std::cout << "\033[0m";
-
-
-
 }
 
 void EarthArmy::modifyUML(int timeStep)
@@ -410,7 +375,6 @@ void EarthArmy::Heal(int timeStep)
 				}
 
 				else {
-					//healList.push(healingUnit);
 					break;
 				}
 
@@ -437,6 +401,45 @@ void EarthArmy::Heal(int timeStep)
 
 		healingUnit = nullptr;
 	}
+}
+
+
+void EarthArmy::printArmy()
+{
+	std::cout << endl;
+	std::cout << "\033[6;42m============================================ \033[0m" << endl;
+	std::cout << "\033[6;42m==========\033[0m \033[1;32mEarth Army Alive Units\033[0m \033[6;42m========== \033[0m" << endl;
+	std::cout << "\033[6;42m============================================ \033[0m" << endl;
+	std::cout << endl;
+	std::cout << "\033[1;32m";
+	if (eSoldiersList.getCount() > 0)
+		std::cout << eSoldiersList.getCount() << " ES " << " Infected % : " << std::setprecision(4) << calcinfectedperc() << " ";
+	else
+		std::cout << eSoldiersList.getCount() << " ES ";
+	eSoldiersList.print();
+	std::cout << eTanksList.getCount() << " ET ";
+	eTanksList.print();
+	std::cout << eGunneryList.getCount() << " EG ";
+	eGunneryList.print();
+	std::cout << healList.getCount() << " HU ";
+	healList.print();
+	std::cout << endl;
+	std::cout << "\033[0m";
+	std::cout << endl;
+	std::cout << "\033[6;41m================================== \033[0m" << endl;
+	std::cout << "\033[6;41m=====\033[0m \033[1;31mUnit Maintenance Lists\033[0m \033[6;41m===== \033[0m" << endl;
+	std::cout << "\033[6;41m================================== \033[0m" << endl;
+	std::cout << endl;
+	std::cout << "\033[1;31m";
+	std::cout << soldiersUML.getCount() << " ES ";
+	soldiersUML.print();
+	std::cout << tankUML.getCount() << " ET ";
+	tankUML.print();
+	std::cout << endl;
+	std::cout << "\033[0m";
+
+
+
 }
 
 void EarthArmy::printFightingUnits()
@@ -478,13 +481,16 @@ void EarthArmy::printFightingUnits()
 void EarthArmy::Armyfile(fstream& Output, int Df, int Dd, int ES_dead, int ET_dead, int EG_dead, int HU_dead = 0)
 {
 	Output << std::fixed << std::setprecision(2);
-	Output << eSoldiersList.getCount() << " ES " << "  " << eTanksList.getCount() << " ET " << "  " << eGunneryList.getCount() << " EG" << "  " << healList.getCount() << " HU" << endl;
+	Output << eSoldiersList.getCount() << " ES " << "  " 
+		   << eTanksList.getCount() << " ET " << "  " 
+		   << eGunneryList.getCount() << " EG" << "  " 
+		   << healList.getCount() << " HU" << endl;
 	Output << endl;
 	Output <<( ((eSoldiersList.getCount() + ES_dead))? (double(Unit::getTotalInfected()) / (eSoldiersList.getCount() + ES_dead)) * 100 : 0)<< " %(Infected_ES) "
-		<<( ((eSoldiersList.getCount() + ES_dead))? (double(ES_dead) / (eSoldiersList.getCount() + ES_dead)) * 100 : 0) << " %(Dead_ES) " << endl
-		<<( ((eTanksList.getCount() + ET_dead))? (double(ET_dead) / (eTanksList.getCount() + ET_dead)) * 100 : 0 ) << " %(Dead_ET) "
-		<<( ((eGunneryList.getCount() + EG_dead))? (double(EG_dead) / (eGunneryList.getCount() + EG_dead)) * 100 : 0) << " %(Dead_EG)" << endl
-	    <<( ((healList.getCount() + HU_dead))? (double(HU_dead) / (healList.getCount() + HU_dead)) * 100 : 0) << " %(Dead_HU) " << endl;
+		   <<( ((eSoldiersList.getCount() + ES_dead))? (double(ES_dead) / (eSoldiersList.getCount() + ES_dead)) * 100 : 0) << " %(Dead_ES) " << endl
+		   <<( ((eTanksList.getCount() + ET_dead))? (double(ET_dead) / (eTanksList.getCount() + ET_dead)) * 100 : 0 ) << " %(Dead_ET) "
+		   <<( ((eGunneryList.getCount() + EG_dead))? (double(EG_dead) / (eGunneryList.getCount() + EG_dead)) * 100 : 0) << " %(Dead_EG)" << endl
+	       <<( ((healList.getCount() + HU_dead))? (double(HU_dead) / (healList.getCount() + HU_dead)) * 100 : 0) << " %(Dead_HU) " << endl;
 	Output << endl;
 	Output << (((eSoldiersList.getCount() + eTanksList.getCount() + eGunneryList.getCount() + ES_dead + ET_dead + EG_dead) != 0) ?
 		  (double(ES_dead + ET_dead + EG_dead) / (eSoldiersList.getCount() + eTanksList.getCount() + eGunneryList.getCount() + ES_dead + ET_dead + EG_dead)) * 100 : 0) << " %(Dead_EarthUnits)" << endl;
@@ -522,4 +528,26 @@ double EarthArmy::calcinfectedperc()
 {
 
 	return double(Unit::getInfectedCount() * 100)/eSoldiersList.getCount() ;
+}
+
+EarthArmy::~EarthArmy()
+{
+	Unit* EarthUnit;
+	double temp;
+	while (eSoldiersList.dequeue(EarthUnit)) {
+		delete EarthUnit;
+		EarthUnit = nullptr;
+	}
+	while (eTanksList.pop(EarthUnit)) {
+		delete EarthUnit;
+		EarthUnit = nullptr;
+	}
+	while (eGunneryList.dequeue(EarthUnit,temp)) {
+		delete EarthUnit;
+		EarthUnit = nullptr;
+	}
+	while (healList.pop(EarthUnit)) {
+		delete EarthUnit;
+		EarthUnit = nullptr;
+	}
 }

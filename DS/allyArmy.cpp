@@ -9,6 +9,25 @@ allyArmy::allyArmy(Game* pGame): Army(pGame)
 	allyUnit = nullptr;
 }
 
+void allyArmy::addUnit(Unit* allyUnit)
+{
+	if (dynamic_cast<saverUnit*>(allyUnit)) {
+		saverUnitsList.enqueue(allyUnit);
+	}
+}
+
+Unit* allyArmy::removeUnit(string type)
+{
+	if (type == "SU") {
+		if (!saverUnitsList.dequeue(allyUnit)) {
+			allyUnit = nullptr;
+		}
+	}
+
+	return allyUnit;
+}
+
+
 bool allyArmy::attack(Army* enemy, int timestep)
 {
 	Unit* AllyUnit;
@@ -51,23 +70,6 @@ void allyArmy::Withdrawal()
 	}
 }
 
-void allyArmy::addUnit(Unit* allyUnit)
-{
-	if (dynamic_cast<saverUnit*>(allyUnit)) {
-		saverUnitsList.enqueue(allyUnit);
-	}
-}
-
-Unit* allyArmy::removeUnit(string type)
-{
-	if (type == "SU") {
-		if (!saverUnitsList.dequeue(allyUnit)) {
-			allyUnit = nullptr;
-		}
-	}
-
-	return allyUnit;
-}
 
 int allyArmy::getSoldiersCount()
 {
@@ -137,5 +139,14 @@ void allyArmy::Armyfile(fstream& Output, int Df, int Dd, int SU_dead, int ET_dea
 		Output << endl;
 		Output << "Df/Db % = 0" << endl;
 		Output << "Dd/Db % = 0" << endl;
+	}
+}
+
+allyArmy::~allyArmy()
+{
+	Unit* su;
+	while (saverUnitsList.dequeue(su)) {
+		delete su;
+		su = nullptr;
 	}
 }

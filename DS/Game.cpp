@@ -4,71 +4,10 @@
 Game::Game()
 {
 	timestep = 0;
-	eartharmy = NULL;
-	alienarmy = NULL;
-	allyarmy = NULL;
-	Input = NULL;
-	pRandGen = new RandGenerator(nullptr,nullptr,nullptr);
-	Output.open("outputs/output.txt", ios::out);
-        if (!Output.is_open()) {
-		  std::cerr << "Failed to open output.txt for writing.\n";
-		} else {
-			Output << "+-----------+-----------+-----------+-----------+-----------+-----------+" << endl;
-			Output << "| " << std::right << std::setw(5) << "Td" << std::setw(5) << ""
-				<< "| " << std::setw(5) << "ID" << std::setw(5) << ""
-				<< "| " << std::setw(5) << "Tj" << std::setw(5) << ""
-				<< "| " << std::setw(5) << "Df" << std::setw(5) << ""
-				<< "| " << std::setw(5) << "Dd" << std::setw(5) << ""
-				<< "| " << std::setw(5) << "Db" << std::setw(5) << "" << " |" << endl;
-			Output << "+-----------+-----------+-----------+-----------+-----------+-----------+" << endl;
-
-		}
-		ES_dead = 0;
-		ET_dead = 0;
-		EG_dead = 0;
-		HU_dead = 0;
-		AS_dead = 0;
-		AM_dead = 0;
-		AD_dead = 0;
-		SU_dead = 0;
-		A_Dd = 0;
-		A_Df = 0;
-		E_Dd = 0;
-		E_Df = 0;
-		Ay_Dd = 0;
-		Ay_Df = 0;
-		SU_help = false;
-
-
-
-
-}
-
-Game::Game(fstream& input, string outFileName)
-{
-	timestep = 0;
 	eartharmy = new EarthArmy(this);
 	alienarmy = new AlienArmy(this);
 	allyarmy = new allyArmy(this);
-	pRandGen = new RandGenerator(eartharmy,alienarmy,allyarmy);
-
-	outFileName = "outputs/" + outFileName + "OutputFile.txt";
-
-	Input = &input;
-	Output.open(outFileName, ios::out);
-	if (!Output.is_open()) {
-		std::cerr << "Failed to open output.txt for writing.\n";
-	}
-	else {
-		Output << "+-----------+-----------+-----------+-----------+-----------+-----------+" << endl;
-		Output << "| " << std::right << std::setw(5) << "Td" << std::setw(5) << ""
-			<< "| " << std::setw(5) << "ID" << std::setw(5) << ""
-			<< "| " << std::setw(5) << "Tj" << std::setw(5) << ""
-			<< "| " << std::setw(5) << "Df" << std::setw(5) << ""
-			<< "| " << std::setw(5) << "Dd" << std::setw(5) << ""
-			<< "| " << std::setw(5) << "Db" << std::setw(5) << "" << " |" << endl;
-		Output << "+-----------+-----------+-----------+-----------+-----------+-----------+" << endl;
-	}
+	pRandGen = new RandGenerator(eartharmy, alienarmy, allyarmy);
 	ES_dead = 0;
 	ET_dead = 0;
 	EG_dead = 0;
@@ -85,9 +24,231 @@ Game::Game(fstream& input, string outFileName)
 	Ay_Df = 0;
 	SU_help = false;
 
-	LoadParameters(input);
+}
+
+void Game::StartGame()
+{
+	string fileName;
+	string outFileName;
+
+	fstream InputFile;
+
+	int choice = 0;
+
+	cout << "Welcome to Gaurdians of the Galaxy War Simulator ^_^" << endl << endl;
+	cout << "\033[1;38;5;12m";
+
+	cout << "1. Weak Earth ---- Weak Aliens" << endl;
+	cout << "2. Weak Earth ---- moderate Aliens" << endl;
+	cout << "3. Weak Earth ---- Strong Aliens" << endl << endl;
+	cout << "\033[0m";
+	cout << "\033[1;38;5;10m";
+	cout << "4. Strong Earth ---- Weak Aliens" << endl;
+	cout << "5. Strong Earth ---- Moderate Aliens" << endl;
+	cout << "6. Strong Earth ---- Strong Aliens" << endl << endl;
+	cout << "\033[0m";
+
+
+	cout << "Please select which case you want to simulate: " ;
+
+	cin >> choice;
+
+	switch (choice) {
+	case 1:
+		fileName = "WE_WA";
+		break;
+	case 2:
+		fileName = "WE_MA";
+		break;
+	case 3:
+		fileName = "WE_SA";
+		break;
+	case 4:
+		fileName = "SE_WA";
+		break;
+	case 5:
+		fileName = "SE_MA";
+		break;
+	case 6:
+		fileName = "SE_SA";
+		break;
+	default:
+		fileName = "Test";
+		break;
+	}
+
+
+	string temp = "inputs/" + fileName + ".txt";
+
+	InputFile.open(temp);
+
+	if (!InputFile.is_open()) {
+		cerr << "Error: Could not open file " << fileName << endl;
+		return;
+	}
+
+	LoadParameters(InputFile);
+
+	outFileName = "outputs/" + fileName + "_OutputFile.txt";
+
+	Output.open(outFileName, ios::out);
+
+	if (!Output.is_open()) {
+		std::cerr << "Failed to open output.txt for writing.\n";
+	}
+
+	else {
+		Output << "+-----------+-----------+-----------+-----------+-----------+-----------+" << endl;
+		Output << "| " << std::right << std::setw(5) << "Td" << std::setw(5) << ""
+			<< "| " << std::setw(5) << "ID" << std::setw(5) << ""
+			<< "| " << std::setw(5) << "Tj" << std::setw(5) << ""
+			<< "| " << std::setw(5) << "Df" << std::setw(5) << ""
+			<< "| " << std::setw(5) << "Dd" << std::setw(5) << ""
+			<< "| " << std::setw(5) << "Db" << std::setw(5) << "" << " |" << endl;
+		Output << "+-----------+-----------+-----------+-----------+-----------+-----------+" << endl;
+	}
+
+	string mode;
+	cout << "\033[1;44mdo you need Silent Mode? (y/n)\033[0m" << endl;
+	cin >> mode;
+
+	system("CLS");
+
+	if (mode == "y") {
+		cout << "Silent Mode is on" << endl;
+		cout << "Simulation Starts Now" << endl;
+	}
+
+	bool flag = true;
+
+	string key;
+
+	while (flag) {
+
+		if (InputFile.is_open()) {
+			GenerateArmy();
+		}
+		
+		if (mode == "n") {
+			cout << "before start the next timestep" << endl;
+
+			print();
+
+			// Start the war
+			flag = StartWar();
+
+			cout << "after start the next timestep" << endl;
+
+			if (flag)
+				print();
+
+			cout << "Press 'q' to quit or any other key to continue: ";
+
+			//cin >> key;
+			
+			if (key == "q") {
+				break;
+			}
+		}
+		else {
+			flag = StartWar();
+		}
+	}
+	
+	if (mode == "y")
+		cout << "Simulation Ends , Output file is created" << endl;
+
+	InputFile.close();
+}
+
+bool Game::StartWar() {
+
+
+	bool F1 = eartharmy->attack(alienarmy, timestep);
+	bool F2 = alienarmy->attack(eartharmy, timestep);
+	if (dynamic_cast<EarthArmy*>(eartharmy)->calcinfectedperc() == 0) {
+		dynamic_cast<allyArmy*>(allyarmy)->Withdrawal();
+		SU_help = false;
+	}
+
+	allyarmy->attack(alienarmy, timestep);
+
+	if (timestep >= 40 && F1 && !F2) {
+		cout << endl;
+		cout << endl;
+		cout << "\033[1;32m";
+		cout << R"(
+
+			 _____           _   _       _____                     _ 
+			|  ___|         | | | |     /  ___|                   | |
+			| |__  __ _ _ __| |_| |__   \ `--.  __ ___   _____  __| |
+			|  __|/ _` | '__| __| '_ \   `--. \/ _` \ \ / / _ \/ _` |
+			| |__| (_| | |  | |_| | | | /\__/ / (_| |\ V /  __/ (_| |
+			\____/\__,_|_|   \__|_| |_| \____/ \__,_| \_/ \___|\__,_|
+                                                         
+                                                         
+			 )" << endl;
+		cout << "\033[0m";
+		return false;
+	}
+	
+	else if (timestep >= 40 && !F1 && F2) {
+		cout << endl;
+		cout << endl;
+		cout << "\033[1;34m";
+		cout << R"(
+
+			  ___  _ _              _    _ _                                            
+			 / _ \| (_)            | |  | (_)                                           
+			/ /_\ \ |_  ___ _ __   | |  | |_ _ __  ___                                  
+			|  _  | | |/ _ \ '_ \  | |/\| | | '_ \/ __|                                 
+			| | | | | |  __/ | | | \  /\  / | | | \__ \                                 
+			\_| |_/_|_|\___|_| |_|  \/  \/|_|_| |_|___/                                 
+                                                                            
+                                                                            
+			 _____           _   _           _           _                            _ 
+			|  ___|         | | | |         | |         | |                          | |
+			| |__  __ _ _ __| |_| |__     __| | ___  ___| |_ _ __ ___  _   _  ___  __| |
+			|  __|/ _` | '__| __| '_ \   / _` |/ _ \/ __| __| '__/ _ \| | | |/ _ \/ _` |
+			| |__| (_| | |  | |_| | | | | (_| |  __/\__ \ |_| | | (_) | |_| |  __/ (_| |
+			\____/\__,_|_|   \__|_| |_|  \__,_|\___||___/\__|_|  \___/ \__, |\___|\__,_|
+										   __/  |           
+										   |___/            
+
+                                                                                              
+
+
+)" << endl;
+		cout << "\033[0m";
+		return false;
+	}
+
+	else if (timestep >= 40 && !F1 && !F2) {
+		cout << endl;
+		cout << endl;
+		cout << "\033[1;36m";
+		cout << R"(
+			  ____                     _ _ 
+			 |  _ \ _ __ __ ___      _| | |
+			 | | | | '__/ _` \ \ /\ / / | |
+			 | |_| | | | (_| |\ V  V /|_|_|
+			 |____/|_|  \__,_| \_/\_/ (_|_)
+                                 
+			)" << endl;
+		cout << "\033[0m";
+		return false;
+	}
+
+	dynamic_cast<EarthArmy*>(eartharmy)->modifyUML(timestep);
+	dynamic_cast<EarthArmy*>(eartharmy)->Heal(timestep);
+	if (dynamic_cast<EarthArmy*>(eartharmy)->calcinfectedperc() > 0) {
+		dynamic_cast<EarthArmy*>(eartharmy)->InfectionSpread();
+	}
+
+	return true;
 
 }
+
 
 void Game::AddToKilled(Unit* Dead)
 {
@@ -174,8 +335,8 @@ void Game::LoadParameters(fstream& input)
 	pRandGen->setPer(HU, ES, ET, EG, AS, AM, AD);
 	pRandGen->setProb(Prob);
 	pRandGen->setRange(R_E_L_P, R_E_H_P, R_E_L_H, R_E_H_H, R_E_L_C, R_E_H_C,
-		R_A_L_P, R_A_H_P, R_A_L_H, R_A_H_H, R_A_L_C, R_A_H_C, R_SU_L_P, R_SU_H_P, R_SU_L_H,
-		R_SU_H_H, R_SU_L_C, R_SU_H_C);
+					   R_A_L_P, R_A_H_P, R_A_L_H, R_A_H_H, R_A_L_C, R_A_H_C, R_SU_L_P, R_SU_H_P, R_SU_L_H,
+					   R_SU_H_H, R_SU_L_C, R_SU_H_C);
 	 
 }
 
@@ -200,6 +361,11 @@ Army* Game::getAlienArmy()
 {
 	return alienarmy;
 }
+int Game::getInfectionProb()
+{
+	return infectionProb;
+}
+
 
 void Game::print()
 {
@@ -235,93 +401,6 @@ void Game::print()
 
 	cout << endl;
 
-}
-
-bool Game::StartWar()
-{
-
-
-	bool F1 = eartharmy->attack(alienarmy,timestep);
-	bool F2 = alienarmy->attack(eartharmy,timestep);
-	if (dynamic_cast<EarthArmy*>(eartharmy)->calcinfectedperc() == 0) {
-		dynamic_cast<allyArmy*>(allyarmy)->Withdrawal();
-		SU_help = false;
-	}
-	allyarmy->attack(alienarmy,timestep);
-	if (timestep >= 40 && F1 && !F2) {
-		cout << endl;
-		cout << endl;
-		cout << "\033[1;32m";
-		cout <<R"(
-
-			 _____           _   _       _____                     _ 
-			|  ___|         | | | |     /  ___|                   | |
-			| |__  __ _ _ __| |_| |__   \ `--.  __ ___   _____  __| |
-			|  __|/ _` | '__| __| '_ \   `--. \/ _` \ \ / / _ \/ _` |
-			| |__| (_| | |  | |_| | | | /\__/ / (_| |\ V /  __/ (_| |
-			\____/\__,_|_|   \__|_| |_| \____/ \__,_| \_/ \___|\__,_|
-                                                         
-                                                         
-			 )" << endl;
-		cout << "\033[0m";
-		return false;
-	}
-	else if (timestep >= 40 && !F1 && F2) {
-		cout << endl;
-		cout << endl;
-		cout << "\033[1;34m";
-		cout << R"(
-
-			  ___  _ _              _    _ _                                            
-			 / _ \| (_)            | |  | (_)                                           
-			/ /_\ \ |_  ___ _ __   | |  | |_ _ __  ___                                  
-			|  _  | | |/ _ \ '_ \  | |/\| | | '_ \/ __|                                 
-			| | | | | |  __/ | | | \  /\  / | | | \__ \                                 
-			\_| |_/_|_|\___|_| |_|  \/  \/|_|_| |_|___/                                 
-                                                                            
-                                                                            
-			 _____           _   _           _           _                            _ 
-			|  ___|         | | | |         | |         | |                          | |
-			| |__  __ _ _ __| |_| |__     __| | ___  ___| |_ _ __ ___  _   _  ___  __| |
-			|  __|/ _` | '__| __| '_ \   / _` |/ _ \/ __| __| '__/ _ \| | | |/ _ \/ _` |
-			| |__| (_| | |  | |_| | | | | (_| |  __/\__ \ |_| | | (_) | |_| |  __/ (_| |
-			\____/\__,_|_|   \__|_| |_|  \__,_|\___||___/\__|_|  \___/ \__, |\___|\__,_|
-										   __/  |           
-										   |___/            
-
-                                                                                              
-
-
-)" << endl;
-		cout << "\033[0m";
-		return false;
-	}
-	else if (timestep >= 40 && !F1 && !F2) {
-		cout << endl;
-		cout << endl;
-		cout << "\033[1;36m";
-		cout << R"(
-			  ____                     _ _ 
-			 |  _ \ _ __ __ ___      _| | |
-			 | | | | '__/ _` \ \ /\ / / | |
-			 | |_| | | | (_| |\ V  V /|_|_|
-			 |____/|_|  \__,_| \_/\_/ (_|_)
-                                 
-			)" << endl;
-		cout << "\033[0m";
-		return false;
-	}
-	dynamic_cast<EarthArmy*>(eartharmy)->modifyUML(timestep);
-	dynamic_cast<EarthArmy*>(eartharmy)->Heal(timestep);
-	dynamic_cast<EarthArmy*>(eartharmy)->InfectionSpread();
-
-	return true;
-
-}
-
-int Game::getInfectionProb()
-{
-	return infectionProb;
 }
 
 Game::~Game()
