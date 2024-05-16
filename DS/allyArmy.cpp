@@ -28,7 +28,7 @@ Unit* allyArmy::removeUnit(string type)
 }
 
 
-bool allyArmy::attack(Army* enemy, int timestep)
+bool allyArmy::attack(Army* enemy, int timestep, bool& ES_total, bool& EG_total)
 {
 	Unit* AllyUnit;
 	Unit* AlienUnit;
@@ -74,6 +74,11 @@ void allyArmy::Withdrawal()
 int allyArmy::getSoldiersCount()
 {
 	return saverUnitsList.getCount();
+}
+
+LinkedQueue<Unit*>* allyArmy::getsaverUnitsList()
+{
+	return &saverUnitsList;
 }
 
 void allyArmy::printArmy()

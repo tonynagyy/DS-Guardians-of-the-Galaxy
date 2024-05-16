@@ -25,7 +25,7 @@ public:
 	// Constructor
 	AlienArmy(Game* pGame);
 	// battle related functions
-	bool attack(Army* enemy, int timestep);
+	bool attack(Army* enemy, int timestep, bool& AS_total, bool& AD_total);
 
 	// list controlling functions
 	void addUnit(Unit*);

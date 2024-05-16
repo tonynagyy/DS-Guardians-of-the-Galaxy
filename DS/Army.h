@@ -24,7 +24,7 @@ public:
 
 	// Battle related functions
 
-	virtual bool attack(Army* enemy,int timestep) = 0;
+	virtual bool attack(Army* enemy,int timestep,bool &,bool &) = 0;
 
 
 	// list controlling functions

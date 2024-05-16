@@ -33,9 +33,10 @@ public:
 	EarthArmy(Game* pGame);
 
 	// battle related functions
-	bool attack(Army* enemy, int timestep);
+	bool attack(Army* enemy, int timestep, bool& ES_total, bool& EG_total);
 	void InfectionSpread();
 	double calcinfectedperc();
+	void witthdrawallUML();
 
 	// list controlling functoins
 	void addUnit(Unit*);

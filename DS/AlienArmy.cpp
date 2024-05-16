@@ -77,7 +77,7 @@ Unit* AlienArmy::removeUnit(string type)
 
 
 
-bool AlienArmy::attack(Army* enemy, int timestep)
+bool AlienArmy::attack(Army* enemy, int timestep, bool& AS_total, bool& AD_total)
 {
 	Unit* EarthUnit;
 	Unit* AlienUnit;
@@ -97,13 +97,44 @@ bool AlienArmy::attack(Army* enemy, int timestep)
 		LinkedQueue<Unit*> SoldierTemp;
 		AS_Attack = AlienUnit;
 		/*First we will get the soldiers that will be attacked*/
-		for (int i = 0;i < AlienUnit->getAttackCapacity();i++) {
-			EarthUnit = enemy->removeUnit("ES");
-			if (EarthUnit == nullptr) break;
-			SoldierTemp.enqueue(EarthUnit);
-			AS_attacking_list->enqueue(EarthUnit);
+		Army* allyenemy = pGame->getAllyArmy();
+		LinkedQueue<Unit*>* SaverList = dynamic_cast<allyArmy*>(allyenemy)->getsaverUnitsList();
+		if (SaverList->isEmpty()) {
+			for (int i = 0;i < AlienUnit->getAttackCapacity();i++) {
+				EarthUnit = enemy->removeUnit("ES");
+				if (EarthUnit == nullptr) break;
+				SoldierTemp.enqueue(EarthUnit);
+				AS_attacking_list->enqueue(EarthUnit);
+			}
+			AlienUnit->attack(&SoldierTemp, timestep, pGame, enemy);
 		}
-		AlienUnit->attack(&SoldierTemp, timestep, pGame, enemy);
+		else {
+
+			int ESCapacity = AlienUnit->getAttackCapacity() / 2;
+			int SUCapacity = AlienUnit->getAttackCapacity() - ESCapacity;
+			for (int i = 0; i < AlienUnit->getAttackCapacity(); i++) {
+
+				if (SoldierTemp.getCount() < ESCapacity) {
+					EarthUnit = enemy->removeUnit("ES");
+
+					if (EarthUnit == nullptr) {
+						ESCapacity = 0;
+						SUCapacity = AlienUnit->getAttackCapacity() - i;
+					}
+					else {
+						SoldierTemp.enqueue(EarthUnit);
+						AS_attacking_list->enqueue(EarthUnit);
+					}
+				}
+				else {
+					EarthUnit = allyenemy->removeUnit("SU");
+					if (EarthUnit == nullptr) break;
+					SoldierTemp.enqueue(EarthUnit);
+					AS_attacking_list->enqueue(EarthUnit);
+				}
+			}
+			AlienUnit->attack(&SoldierTemp, timestep, pGame, enemy);
+		}	
 
 	}
 	else {
@@ -247,6 +278,17 @@ bool AlienArmy::attack(Army* enemy, int timestep)
 	else {
 		F3 = false;
 	}
+
+
+	if(aSoldiersList.getCount() == aSoldiersList.getCount()+ aMonstersList.getCount() + aDronesList.getCount() )
+		AS_total = true;
+	else 
+		AS_total = false;
+	if(aDronesList.getCount() == aSoldiersList.getCount() + aMonstersList.getCount() + aDronesList.getCount())
+		AD_total = true;
+	else 
+		AD_total = false;
+
 	return F1 || F2 || F3;
 }
 

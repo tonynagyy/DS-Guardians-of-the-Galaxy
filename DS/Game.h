@@ -5,8 +5,7 @@
 #include"allyArmy.h"
 #include "RandGenerator.h"
 #include "LinkedQueue.h"
-#include <iostream>
-using namespace std;
+
 
 class Game
 {
@@ -53,6 +52,7 @@ public:
 	// geters
 	Army* getEarthArmy();
 	Army* getAlienArmy();
+	Army* getAllyArmy();
 	int getInfectionProb();
 
 	//print function

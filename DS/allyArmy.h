@@ -19,7 +19,7 @@ public:
     allyArmy(Game* pGame);
 
     // battle related functions
-    bool attack(Army* enemy, int timestep);
+    bool attack(Army* enemy, int timestep, bool& , bool& );
     void Withdrawal();
 
     // list controlling functions
@@ -28,6 +28,7 @@ public:
 
     // getters
     int getSoldiersCount();
+    LinkedQueue<Unit*>* getsaverUnitsList();
 
     // print functions
     void printArmy();

@@ -1,5 +1,7 @@
 ﻿#include "Game.h"
 #include <iomanip> 
+#include <iostream>
+using namespace std;
 
 Game::Game()
 {
@@ -52,8 +54,7 @@ void Game::StartGame()
 	cout << "Please select which case you want to simulate: " ;
 
 	cin >> choice;
-
-	switch (choice) {
+	switch  (choice) {
 	case 1:
 		fileName = "WE_WA";
 		break;
@@ -163,17 +164,21 @@ void Game::StartGame()
 
 bool Game::StartWar() {
 
-
-	bool F1 = eartharmy->attack(alienarmy, timestep);
-	bool F2 = alienarmy->attack(eartharmy, timestep);
+	bool ES_total = false;
+	bool AS_total = false;
+	bool AD_total = false;
+	bool EG_total = false;
+	bool F1 = eartharmy->attack(alienarmy, timestep , ES_total , EG_total);
+	bool F2 = alienarmy->attack(eartharmy, timestep, AS_total, AD_total);
 	if (dynamic_cast<EarthArmy*>(eartharmy)->calcinfectedperc() == 0) {
 		dynamic_cast<allyArmy*>(allyarmy)->Withdrawal();
 		SU_help = false;
 	}
 
-	allyarmy->attack(alienarmy, timestep);
+	allyarmy->attack(alienarmy, timestep, ES_total, ES_total);
 
 	if (timestep >= 40 && F1 && !F2) {
+		dynamic_cast<EarthArmy*>(eartharmy)->witthdrawallUML();
 		cout << endl;
 		cout << endl;
 		cout << "\033[1;32m";
@@ -193,6 +198,7 @@ bool Game::StartWar() {
 	}
 	
 	else if (timestep >= 40 && !F1 && F2) {
+		dynamic_cast<EarthArmy*>(eartharmy)->witthdrawallUML();
 		cout << endl;
 		cout << endl;
 		cout << "\033[1;34m";
@@ -223,7 +229,8 @@ bool Game::StartWar() {
 		return false;
 	}
 
-	else if (timestep >= 40 && !F1 && !F2) {
+	else if (timestep >= 40 && ((!F1 && !F2) || (ES_total && AD_total) || (EG_total && AS_total))) {
+		dynamic_cast<EarthArmy*>(eartharmy)->witthdrawallUML();
 		cout << endl;
 		cout << endl;
 		cout << "\033[1;36m";
@@ -361,6 +368,10 @@ Army* Game::getAlienArmy()
 {
 	return alienarmy;
 }
+Army* Game::getAllyArmy()
+{
+	return allyarmy;
+}
 int Game::getInfectionProb()
 {
 	return infectionProb;
@@ -414,6 +425,8 @@ Game::~Game()
 	Output << "====================== Final Ally Army ===================== " << endl;
 	allyarmy->Armyfile(Output, Ay_Df, Ay_Dd, SU_dead, ET_dead, EG_dead, HU_dead);
 	Output.close();
+	Unit::total_infected= 0;
+	Unit::infectedCount = 0;
 	if (!eartharmy)
 		delete eartharmy;
 	

@@ -9,6 +9,9 @@
 #include "Unit.h"
 #include"Game.h"
 #include <Windows.h>
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
 using namespace std;
 
 
@@ -57,7 +60,7 @@ int main() {
 	
 		cout << "\033[0m";
 
-		Sleep(2000);
+		//leep(2000);
 
 		pGame->StartGame();
 
@@ -65,11 +68,16 @@ int main() {
 		delete pGame;
 
 		cout << "\n\n";
-		cout << "Do you want to play again? (y/n)" << endl;
 		
+		cout << "Do you want to play again? (y/n)" << endl;
 		cin >> restart;
-
+		while (restart != "y" && restart != "n") {
+			cout << "Please enter y or n: ";
+			cin >> restart;
+		}
 		system("CLS");
 	}
+	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
+	_CrtDumpMemoryLeaks();
 
 }
